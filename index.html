@@ -252,7 +252,7 @@ button,input,select,textarea{font-family:inherit}
   </main>
 </div>
 
-<div id="bf" role="button" aria-label="בלאק פריידיי"><small>BLACK FRIDAY · בלאק פריידיי</small><b id="bfp"></b><span>הנחה על כל האתר</span></div>
+<div id="bf" role="button" aria-label="בלאק פריידיי"><small>BLACK FRIDAY · בלאק פריידיי</small><b id="bfp"></b><span id="bfs">הנחה על כל האתר</span></div>
 
 <div id="admin">
   <div id="alogin">
@@ -371,8 +371,14 @@ function priceHtml(p){var d=effPct(p);return d>0?'₪'+esc(effPrice(p))+'<span c
 function updateBanner(){
   var b=$("bf");if(!b)return;
   var inAdmin=$("admin").style.display==="block";
-  if(GLOBAL>0&&!inAdmin&&!bfClosed){$("bfp").textContent=GLOBAL+"%";b.style.display="block";setTimeout(function(){b.classList.add("on")},60)}
-  else{b.classList.remove("on");if(GLOBAL<=0||inAdmin)b.style.display="none"}
+  var today="";try{today=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Jerusalem"})}catch(e){}
+  var tease=GLOBAL<=0&&today&&today<="2026-11-27";
+  var live=GLOBAL>0;
+  if((live||tease)&&!inAdmin&&!bfClosed){
+    $("bfp").textContent=live?GLOBAL+"%":"27.11";
+    $("bfs").textContent=live?"הנחה על כל האתר":"50% הנחה על כל האתר";
+    b.style.display="block";setTimeout(function(){b.classList.add("on")},60)}
+  else{b.classList.remove("on");if(!(live||tease)||inAdmin)b.style.display="none"}
 }
 var bfClosed=false;
 $("bf").addEventListener("click",function(){bfClosed=true;$("bf").classList.remove("on")});
