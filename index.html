@@ -370,7 +370,7 @@ function effPrice(p){var d=effPct(p);return d>0?Math.round(+p.price*(100-d)/100)
 function priceHtml(p){var d=effPct(p);return d>0?'₪'+esc(effPrice(p))+'<span class="oldp">₪'+esc(p.price)+'</span><span class="dbadge">-'+d+'%</span>':'₪'+esc(p.price)}
 function updateBanner(){
   var b=$("bf");if(!b)return;
-  var inAdmin=$("admin").style.display==="block";
+  var inAdmin=$("landing").style.display==="none";
   var today="";try{today=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Jerusalem"})}catch(e){}
   var tease=GLOBAL<=0&&today&&today<="2026-11-27";
   var live=GLOBAL>0;
