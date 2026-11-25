@@ -129,8 +129,8 @@ button,input,select,textarea{font-family:inherit}
 .demo{margin:24px 0 0;padding:12px 14px;border-radius:12px;background:#FFF6D6;color:#6B5200;font-size:14px}
 .adminTop.left{right:auto;left:14px}
 #aapp{position:relative;min-height:100vh;isolation:isolate}
-#aapp::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(rgba(8,12,26,.30),rgba(8,12,26,.50)),url(admin-bg.jpg) center/cover no-repeat}
-#aapp .ahead h1,#aapp .sub,#aapp .hint,#aapp .hint b,#aapp .field label{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.55)}
+#aapp.bgAdmin::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(rgba(8,12,26,.30),rgba(8,12,26,.50)),url(admin-bg.jpg) center/cover no-repeat}
+#aapp.bgAdmin .ahead h1,#aapp.bgAdmin .sub,#aapp.bgAdmin .hint,#aapp.bgAdmin .hint b,#aapp.bgAdmin .field label{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.55)}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -428,7 +428,7 @@ function adminEnter(mode){
   setAdminLogged(false);
   $("alerr").textContent="";
 }
-function setAdminLogged(on){$("alogin").hidden=on;$("aapp").hidden=!on;var h=document.querySelector("#alistView h1");if(h)h.textContent=ROLE==="sub"?"סגני סגנים":ROLE==="deputy"?"מידע פנימי על המוצרים":"המוצרים שלי";var d=document.querySelector("#alistView .demo");if(d)d.hidden=(ROLE==="deputy"||ROLE==="sub");if(on)aList()}
+function setAdminLogged(on){$("alogin").hidden=on;$("aapp").hidden=!on;$("aapp").className=(on&&ROLE==="admin")?"bgAdmin":"";var h=document.querySelector("#alistView h1");if(h)h.textContent=ROLE==="sub"?"סגני סגנים":ROLE==="deputy"?"מידע פנימי על המוצרים":"המוצרים שלי";var d=document.querySelector("#alistView .demo");if(d)d.hidden=(ROLE==="deputy"||ROLE==="sub");if(on)aList()}
 function aList(){if(ROLE==="admin"&&!$("aformView").hidden){rpc("set_adding",{p_code:CODE,p_on:false}).catch(function(){})}$("alistView").hidden=false;$("aformView").hidden=true;aRender();try{window.scrollTo(0,0)}catch(e){}}
 function aForm(){$("alistView").hidden=true;$("aformView").hidden=false;try{window.scrollTo(0,0)}catch(e){}}
 
