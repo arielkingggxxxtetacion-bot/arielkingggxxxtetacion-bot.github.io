@@ -128,6 +128,9 @@ button,input,select,textarea{font-family:inherit}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
 .demo{margin:24px 0 0;padding:12px 14px;border-radius:12px;background:#FFF6D6;color:#6B5200;font-size:14px}
 .adminTop.left{right:auto;left:14px}
+#aapp{position:relative;min-height:100vh;isolation:isolate}
+#aapp::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(rgba(8,12,26,.30),rgba(8,12,26,.50)),url(admin-bg.jpg) center/cover no-repeat}
+#aapp .ahead h1,#aapp .sub,#aapp .hint,#aapp .hint b,#aapp .field label{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.55)}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
