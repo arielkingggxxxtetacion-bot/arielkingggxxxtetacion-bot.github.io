@@ -19,6 +19,18 @@ button,input,select,textarea{font-family:inherit}
 .enter{min-height:60px;padding:0 44px;border:0;border-radius:16px;background:#1F5FD6;color:#FFFFFF;font-size:22px;font-weight:700;box-shadow:0 8px 24px rgba(31,95,214,.35)}
 .enter:active{transform:scale(.98)}
 .hero{margin-top:64px;padding:22px 32px 24px;background:rgba(255,255,255,.88);border-radius:26px;text-align:center}
+
+.shareUp{position:absolute;bottom:34px;left:calc(50% + 86px);z-index:3;width:46px;height:46px;border:0;border-radius:50%;background:#fff;color:#1F5FD6;font-size:24px;font-weight:800;box-shadow:0 6px 18px rgba(0,0,0,.18);animation:bob 1.6s ease-in-out infinite;display:flex;align-items:center;justify-content:center;padding:0}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+#share{position:fixed;inset:0;z-index:99990;background:linear-gradient(170deg,#1F5FD6 0%,#143F94 100%);color:#fff;transform:translateY(100%);transition:transform .5s cubic-bezier(.2,.8,.2,1);overflow:auto;padding:22px 20px 40px;text-align:center}
+#share.on{transform:translateY(0)}
+#share .sx{position:absolute;top:14px;left:14px;width:46px;height:46px;border:0;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;font-size:24px}
+#share h2{margin:56px 0 6px;font-size:30px;font-weight:800}
+#share p.lead{margin:0 auto 18px;max-width:340px;font-size:17px;line-height:1.5;opacity:.95}
+#share .post{background:#fff;color:#143F94;border-radius:18px;padding:16px;max-width:360px;margin:0 auto 16px;font-size:16px;line-height:1.55;font-weight:600;text-align:right;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+#share .sb{display:block;width:100%;max-width:360px;margin:10px auto 0;min-height:54px;border:0;border-radius:14px;background:#fff;color:#1F5FD6;font-size:18px;font-weight:800}
+#share .sb.alt{background:rgba(255,255,255,.18);color:#fff}
+#shareMsg{min-height:22px;margin-top:12px;font-size:15px;font-weight:700}
 .hero svg,.aboutTop svg{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
 #egg{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:#143F94;color:#fff;font-weight:800;font-size:20px;padding:14px 22px;border-radius:16px;z-index:99998;opacity:0;transition:.3s;pointer-events:none;text-align:center;max-width:86vw}
 #egg.on{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -185,6 +197,17 @@ button,input,select,textarea{font-family:inherit}
 </head>
 <body>
 
+<div id="share" aria-hidden="true">
+  <button type="button" class="sx" id="shareClose" aria-label="סגירה">&#8595;</button>
+  <h2>ספרו לחברים &#128722;</h2>
+  <p class="lead">אהבתם את Marketly? פרסמו אותנו ברשת החברתית שלכם ועזרו לנו לגדול. זה לוקח עשר שניות.</p>
+  <div class="post" id="sharePost">גיליתי חנות חדשה: Marketly. משלוח עד הבית, תשלום רק כשמקבלים, ולוח הנחות שנתי עם מבצעים כל השנה &#128717;&#65039;</div>
+  <button type="button" class="sb" id="shareNative">שיתוף</button>
+  <button type="button" class="sb alt" id="shareWa">שליחה בוואטסאפ</button>
+  <button type="button" class="sb alt" id="shareIg">העתקה לאינסטגרם</button>
+  <button type="button" class="sb alt" id="shareCopy">העתקת הטקסט והקישור</button>
+  <div id="shareMsg"></div>
+</div>
 <div id="landing">
   <canvas id="bgc" width="52" height="82" aria-hidden="true"></canvas>
   <div class="veil"></div>
@@ -201,6 +224,7 @@ button,input,select,textarea{font-family:inherit}
       <span>Marketly</span>
     </button>
   </div>
+  <button type="button" class="shareUp" id="shareOpen" aria-label="הזמינו חברים">&#8593;</button>
 </div>
 
 <div id="shop">
@@ -310,7 +334,8 @@ button,input,select,textarea{font-family:inherit}
     </div>
   </div>
 
-  <div id="kick" aria-live="assertive"><div class="kb"><b>מה אתה מנסה לעשות?!</b><span>😂</span></div></div>
+  
+<div id="kick" aria-live="assertive"><div class="kb"><b>מה אתה מנסה לעשות?!</b><span>😂</span></div></div>
   <div id="aapp" hidden>
     <header class="atop">
       <div class="logo"><svg viewBox="0 0 160 160" aria-hidden="true"><rect width="160" height="160" rx="36" fill="#1F5FD6"/><g transform="translate(20 20) scale(5)"><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 8H21L18.9 15.6Q18.6 16.5 17.5 16.5H9.8Q8.9 16.5 8.6 15.5Z" fill="#FFFFFF"/><g stroke="#1F5FD6" stroke-width="1.3" stroke-linecap="round"><line x1="10.5" y1="10.2" x2="10.5" y2="14.3"/><line x1="13.5" y1="10.2" x2="13.5" y2="14.3"/><line x1="16.5" y1="10.2" x2="16.5" y2="14.3"/></g><circle cx="9" cy="20" r="2" fill="#FFFFFF"/><circle cx="18" cy="20" r="2" fill="#FFFFFF"/></g></svg><span>Marketly</span></div>
@@ -742,6 +767,28 @@ function kickOut(){
   }
   counter(".hero svg",6,function(){say("נו מה חסר לכם בורג?!")});
   counter(".aboutTop svg",8,function(){window.open("https://youtu.be/EhUmqQs2vno?si=w9aM_ie2nWUTfJNH","_blank")});
+})();
+
+/* ---------- share sheet ---------- */
+(function(){
+  var URL_="https://arielkingggxxxtetacion-bot.github.io";
+  function txt(){return $("sharePost").textContent}
+  function msg(t){$("shareMsg").textContent=t;setTimeout(function(){$("shareMsg").textContent=""},2600)}
+  function copy(t,ok){
+    function fb(){var a=document.createElement("textarea");a.value=t;a.style.position="fixed";a.style.opacity="0";document.body.appendChild(a);a.focus();a.select();try{document.execCommand("copy");msg(ok)}catch(e){msg("לא הצלחנו להעתיק")}document.body.removeChild(a)}
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){msg(ok)}).catch(fb)}else fb();
+  }
+  function open_(){$("share").classList.add("on");$("share").setAttribute("aria-hidden","false")}
+  function close_(){$("share").classList.remove("on");$("share").setAttribute("aria-hidden","true")}
+  $("shareOpen").addEventListener("click",open_);
+  $("shareClose").addEventListener("click",close_);
+  $("shareNative").addEventListener("click",function(){
+    if(navigator.share){navigator.share({title:"Marketly",text:txt(),url:URL_}).catch(function(){})}
+    else copy(txt()+" "+URL_,"הועתק. הדביקו איפה שבא לכם")
+  });
+  $("shareWa").addEventListener("click",function(){window.open("https://wa.me/?text="+encodeURIComponent(txt()+" "+URL_),"_blank")});
+  $("shareIg").addEventListener("click",function(){copy(txt()+" "+URL_,"הועתק. הדביקו בפוסט או בסטורי");setTimeout(function(){window.open("https://www.instagram.com/","_blank")},900)});
+  $("shareCopy").addEventListener("click",function(){copy(txt()+" "+URL_,"הועתק!")});
 })();
 $("alogout").addEventListener("click",function(){try{sessionStorage.removeItem("mk_admin")}catch(e){}show("shop")});
 $("alist").addEventListener("click",function(e){if(e.target&&e.target.id==="subBack"){adminEnter("deputy")}});
