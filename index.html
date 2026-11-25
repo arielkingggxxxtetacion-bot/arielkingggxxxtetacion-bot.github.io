@@ -54,6 +54,30 @@ button,input,select,textarea{font-family:inherit}
 .photo{aspect-ratio:1;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
 .photo svg{width:56%;height:56%;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .photo img{width:100%;height:100%;object-fit:cover;display:block}
+
+.newBadge{position:absolute;top:8px;left:8px;background:#FFD54A;color:#111;font-size:13px;font-weight:800;padding:3px 10px;border-radius:999px;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.fbar{margin:0 0 14px}
+.fbar input{width:100%;min-height:50px;border:1.5px solid #DCE3F0;border-radius:14px;padding:0 16px;font-size:17px;background:#fff}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:10px 0 2px;-webkit-overflow-scrolling:touch}
+.chips button{flex:0 0 auto;min-height:40px;padding:0 16px;border-radius:999px;border:1.5px solid #DCE3F0;background:#fff;color:#143F94;font-size:15px;font-weight:700}
+.chips button.on{background:#1F5FD6;border-color:#1F5FD6;color:#fff}
+#confetti{position:fixed;inset:0;z-index:99997;pointer-events:none;overflow:hidden}
+#confetti i{position:absolute;top:-20px;width:10px;height:16px;border-radius:2px;animation:cfall 1.8s ease-in forwards}
+@keyframes cfall{to{transform:translate(var(--dx),105vh) rotate(var(--rot));opacity:.9}}
+
+.gtaLink{position:absolute;bottom:34px;left:8px;z-index:3;min-height:46px;padding:0 10px;border:0;border-radius:14px;background:#111;color:#FFD54A;font-size:14px;font-weight:800;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+#gta{display:none;background:#0F1B33;color:#fff;min-height:100vh;padding:0 0 60px}
+#gta .gtop{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;position:sticky;top:0;background:#0F1B33;z-index:2;border-bottom:1px solid rgba(255,255,255,.12)}
+#gta .gtop b{font-size:18px}
+#gta .gbody{max-width:560px;margin:0 auto;padding:18px 16px}
+#gta h1{margin:0 0 6px;font-size:30px;font-weight:800;color:#FFD54A}
+#gta .gl{margin:0 0 18px;opacity:.9;line-height:1.55}
+#gta .gsec{margin:22px 0 8px;font-size:18px;font-weight:800;color:#8FB4FF}
+#gta .gtip{background:rgba(255,255,255,.08);border-radius:14px;padding:13px 14px;margin-bottom:10px;line-height:1.55;font-size:16px}
+#gta .gtip b{display:block;margin-bottom:3px;color:#fff}
+#gta a.gbtn{display:flex;align-items:center;justify-content:center;min-height:50px;margin-top:10px;border-radius:14px;background:#FF3B30;color:#fff;font-weight:800;text-decoration:none;font-size:16px}
+#gta a.gsrc{display:block;margin-top:8px;color:#8FB4FF;font-size:14px;word-break:break-all}
+#gta .gnote{margin-top:20px;font-size:13px;opacity:.7;line-height:1.5}
 .soldBadge{position:absolute;top:8px;right:8px;background:#0F1B33;color:#fff;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px}
 .card.isSold .photo img{opacity:.55}
 .info{padding:12px 14px 14px}
@@ -215,6 +239,7 @@ button,input,select,textarea{font-family:inherit}
   <div class="veil"></div>
   <button type="button" class="adminTop" id="toAdminTop">כניסת מנהלים</button>
   <button type="button" class="adminTop left" id="toDeputy">כניסת סגני מנהלים</button>
+  <button type="button" class="gtaLink" id="toGta" aria-label="טריקים ל-GTA 6">GTA 6 &#127918;</button>
   <div class="content">
     <div class="hero">
       <svg viewBox="0 0 160 160" role="img" aria-label="Marketly logo"><rect width="160" height="160" rx="36" fill="#1F5FD6"/><g transform="translate(20 20) scale(5)"><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 8H21L18.9 15.6Q18.6 16.5 17.5 16.5H9.8Q8.9 16.5 8.6 15.5Z" fill="#FFFFFF"/><g stroke="#1F5FD6" stroke-width="1.3" stroke-linecap="round"><line x1="10.5" y1="10.2" x2="10.5" y2="14.3"/><line x1="13.5" y1="10.2" x2="13.5" y2="14.3"/><line x1="16.5" y1="10.2" x2="16.5" y2="14.3"/></g><circle cx="9" cy="20" r="2" fill="#FFFFFF"/><circle cx="18" cy="20" r="2" fill="#FFFFFF"/></g></svg>
@@ -229,6 +254,38 @@ button,input,select,textarea{font-family:inherit}
   </div>
 </div>
 
+<div id="gta">
+  <div class="gtop"><b>GTA 6</b><button type="button" class="backBtn" id="backGta">חזרה</button></div>
+  <div class="gbody">
+    <h1>טריקים ל-GTA 6</h1>
+    <p class="gl">אספתי טיפים בסיסיים ממדריכי משחק שפורסמו, בכתיבה שלי. בסוף יש קישורים לחיפוש סרטונים ביוטיוב.</p>
+    <div class="gsec">כסף</div>
+    <div class="gtip"><b>אל תסתובבו עם הרבה מזומן</b>אם הדמות מתה, הכסף שבכיס הולך לאיבוד. בתחילת המשחק כדאי להחביא מזומן בבית, ואחרי שנפתח הבנק בסיפור להפקיד בכספומט.</div>
+    <div class="gtip"><b>תכננו בריחה לפני כל שוד</b>לפני שנכנסים לשוד, חשבו איך יוצאים ממנו: איזה רכב מחכה בחוץ ואיזה כביש פנוי. שוד בלי תוכנית בריחה נגמר מהר.</div>
+    <div class="gsec">רכבים</div>
+    <div class="gtip"><b>בדקו רכב לפני שגונבים</b>הטלפון של הדמות יכול לסרוק רכב ולהראות אם יש בו אזעקה או משדר מעקב. זה חוסך מרדפים מיותרים.</div>
+    <div class="gtip"><b>רכב גנוב לא נשאר שלכם</b>בניגוד למשחקים קודמים, רכב שגניבתם לא נשמר אצלכם לתמיד. אם רוצים רכב קבוע, צריך להשיג אחד אחרת.</div>
+    <div class="gsec">משטרה</div>
+    <div class="gtip"><b>אל תסמכו על המפה הקטנה</b>המשטרה לא תמיד מופיעה במפה הקטנה בפינה, אז תסתכלו גם סביבכם, במיוחד במרדף.</div>
+    <div class="gtip"><b>אופנוע הוא כלי בריחה טוב</b>אופנוע קטן עובר בין מכוניות וברחובות צרים, ולכן הרבה שחקנים ממליצים עליו כדי לברוח מהמשטרה.</div>
+    <div class="gsec">מפה</div>
+    <div class="gtip"><b>לגלות את המפה מהר</b>אפשר לקחת מונית לשדה תעופה, לטוס ולטייל מעל המפה. לפי מדריך שפורסם, זה לוקח כשעתיים עד שלוש כדי לחשוף את כולה.</div>
+    <div class="gsec">דמות</div>
+    <div class="gtip"><b>שגרה יומית משפרת את הדמות</b>המשחק קצת כמו חיים אמיתיים: הרגלים טובים, כמו פעילות סדירה, משפרים את היכולות של הדמות.</div>
+    <div class="gtip"><b>הכירו את הפרופיל הפלילי</b>יש במשחק מערכת שעוקבת אחרי מה שעשיתם. כדאי להכיר אותה כבר בהתחלה, כי היא משפיעה על ההמשך.</div>
+    <div class="gsec">ביוטיוב</div>
+    <a class="gbtn" href="https://www.youtube.com/results?search_query=GTA+6+tips+and+tricks" target="_blank" rel="noopener">טיפים וטריקים ל-GTA 6</a>
+    <a class="gbtn" href="https://www.youtube.com/results?search_query=GTA+6+beginner+guide" target="_blank" rel="noopener">מדריך למתחילים</a>
+    <a class="gbtn" href="https://www.youtube.com/results?search_query=GTA+6+how+to+make+money" target="_blank" rel="noopener">איך מרוויחים כסף</a>
+    <div class="gsec">מקורות</div>
+    <a class="gsrc" href="https://www.powerpyx.com/?p=370491" target="_blank" rel="noopener">PowerPyx: GTA 6 Tips &amp; Tricks</a>
+    <a class="gsrc" href="https://alcasthq.com/?p=87653" target="_blank" rel="noopener">AlcastHQ: 69 GTA 6 tips for beginners</a>
+    <a class="gsrc" href="https://gamerblurb.com/articles/gta-6-tips-and-tricks-17-things-you-should-know" target="_blank" rel="noopener">GamerBlurb: 17 tips</a>
+    <a class="gsrc" href="https://www.redbull.com/gb-en/gta-6-beginners-guide" target="_blank" rel="noopener">Red Bull: beginner's guide</a>
+    <a class="gsrc" href="https://www.giga.de/games/gta-6-10-tipps-die-ihr-vor-spielstart-wissen-solltet--01M7SZQQ87F8RWF530XDPH1XK7" target="_blank" rel="noopener">GIGA: 10 Tipps</a>
+    <p class="gnote">דף מעריצים, לא קשור ל-Rockstar Games. המשחק מתעדכן, ולכן חלק מהטיפים עלולים להשתנות. הקישורים מובילים לאתרים חיצוניים.</p>
+  </div>
+</div>
 <div id="shop">
   <header class="shopbar">
     <button type="button" class="backBtn" id="backShop">חזרה</button>
@@ -242,6 +299,7 @@ button,input,select,textarea{font-family:inherit}
     <p>משלוח עד הבית. התשלום במקום, במזומן או בביט.</p>
   </section>
   <main class="wrap">
+    <div class="fbar" id="fbar" hidden><input id="fq" type="search" placeholder="חיפוש מוצר" autocomplete="off"><div class="chips" id="fchips"></div></div>
     <div class="grid" id="grid"></div>
     <p class="note" id="shopNote">המוצרים והמחירים כאן הם דוגמה בלבד, עד שנעלה את המוצרים האמיתיים.</p>
     <button type="button" class="calLink" id="toCal">לוח הנחות שנתי</button>
@@ -506,17 +564,32 @@ loadProducts(function(){renderShop()});
 document.addEventListener("click",function(e){if(e.target&&e.target.id==="retryLoad"){loadErr=false;loadTry=0;$("grid").innerHTML='<div class="noStock">טוען...</div>';loadProducts(function(){renderShop()})}});
 
 var CUR=[],curItem=0;
-function shopItems(){return products}
+var SQ="",SCAT="";
+function isNew(x){var t=+x.id;return t>1e12&&Date.now()-t<3*864e5}
+function shopItems(){
+  return products.filter(function(x){
+    if(SCAT&&x.cat!==SCAT)return false;
+    if(SQ&&(x.name+" "+(x.desc||"")).toLowerCase().indexOf(SQ.toLowerCase())<0)return false;
+    return true;
+  });
+}
+function fbarRender(){
+  var f=$("fbar");if(!f)return;
+  f.hidden=products.length<4;
+  if(f.hidden)return;
+  var cats=[];products.forEach(function(x){if(x.cat&&cats.indexOf(x.cat)<0)cats.push(x.cat)});
+  $("fchips").innerHTML=['הכל'].concat(cats).map(function(c){var on=(c==="הכל"&&!SCAT)||c===SCAT;return '<button type="button" class="'+(on?'on':'')+'" data-cat="'+esc(c==="הכל"?"":c)+'">'+esc(c)+'</button>'}).join("");
+}
 
 function renderShop(){
-  CUR=shopItems();
+  CUR=shopItems();fbarRender();
   var g="";
   CUR.forEach(function(x,i){
     var p=PAL[i%PAL.length];
     var inner=x.photos&&x.photos[0]?'<img src="'+x.photos[0]+'" alt="">':'<svg viewBox="0 0 24 24" stroke="'+p[1]+'">'+ICONS[x.icon||0]+'</svg>';
-    g+='<article class="card'+(x.sold?' isSold':'')+'" data-i="'+i+'" role="button" tabindex="0"><div class="photo" style="background:'+p[0]+'" aria-hidden="true">'+inner+(x.sold?'<span class="soldBadge">נמכר</span>':'')+'</div><div class="info"><h3>'+esc(x.name)+'</h3><div class="cond">'+esc(x.cond)+'</div><div class="price">'+priceHtml(x)+'</div></div></article>';
+    g+='<article class="card'+(x.sold?' isSold':'')+'" data-i="'+i+'" role="button" tabindex="0"><div class="photo" style="background:'+p[0]+'" aria-hidden="true">'+inner+(x.sold?'<span class="soldBadge">נמכר</span>':(isNew(x)?'<span class="newBadge">חדש!</span>':''))+'</div><div class="info"><h3>'+esc(x.name)+'</h3><div class="cond">'+esc(x.cond)+'</div><div class="price">'+priceHtml(x)+'</div></div></article>';
   });
-  $("grid").innerHTML=g||(loaded?(loadErr?'<div class="noStock">לא הצלחנו לטעון את המוצרים. מנסים שוב...<br><button type="button" class="btn small" id="retryLoad" style="margin-top:12px">נסה שוב עכשיו</button></div>':'<div class="noStock">אין לנו מלאי תחזרו מחר ):</div>'):'<div class="noStock">טוען...</div>');
+  $("grid").innerHTML=g||(loaded?(loadErr?'<div class="noStock">לא הצלחנו לטעון את המוצרים. מנסים שוב...<br><button type="button" class="btn small" id="retryLoad" style="margin-top:12px">נסה שוב עכשיו</button></div>':(products.length?'<div class="noStock">לא מצאנו מוצרים מתאימים</div>':'<div class="noStock">אין לנו מלאי תחזרו מחר ):</div>')):'<div class="noStock">טוען...</div>');
   $("shopNote").hidden=true;
 }
 
@@ -550,7 +623,7 @@ function openProduct(i){
   show("product");
 }
 
-var VIEWS=["landing","shop","about","product","admin","checkout","calendar"];
+var VIEWS=["landing","shop","about","product","admin","checkout","calendar","gta"];
 function show(name){
   if(name==="shop")renderShop();
   VIEWS.forEach(function(v){$(v).style.display=(v===name)?"block":"none"});
@@ -559,6 +632,8 @@ function show(name){
 }
 $("enter").addEventListener("click",function(){show("shop")});
 $("toAbout").addEventListener("click",function(){show("about")});
+$("toGta").addEventListener("click",function(){show("gta")});
+$("backGta").addEventListener("click",function(){show("landing")});
 $("toLanding").addEventListener("click",function(){show("landing")});
 $("backShop").addEventListener("click",function(){show("landing")});
 $("backAbout").addEventListener("click",function(){show("landing")});
@@ -820,6 +895,18 @@ function kickOut(){
   document.addEventListener("visibilitychange",function(){if(!document.hidden)tick()});
   window.addEventListener("pageshow",function(e){if(e.persisted)tick()});
 })();
+
+/* ---------- search, chips, confetti ---------- */
+$("fq").addEventListener("input",function(){SQ=this.value.trim();var a=$("fq");renderShop();var q=$("fq");if(q&&document.activeElement!==q){q.focus()}});
+$("fchips").addEventListener("click",function(e){var b=e.target.closest("button[data-cat]");if(!b)return;SCAT=b.dataset.cat;renderShop()});
+function confetti(){
+  var c=document.createElement("div");c.id="confetti";
+  var col=["#1F5FD6","#FFD54A","#E8467C","#2EB67D","#8E5CF7","#FF8A3D"];
+  for(var i=0;i<60;i++){var d=document.createElement("i");d.style.left=Math.random()*100+"%";d.style.background=col[i%col.length];d.style.setProperty("--dx",(Math.random()*160-80)+"px");d.style.setProperty("--rot",(Math.random()*900-450)+"deg");d.style.animationDelay=(Math.random()*.4)+"s";d.style.animationDuration=(1.4+Math.random()*.9)+"s";c.appendChild(d)}
+  document.body.appendChild(c);setTimeout(function(){if(c.parentNode)c.parentNode.removeChild(c)},2600);
+}
+$("orderBtn").addEventListener("click",confetti);
+$("mailBtn").addEventListener("click",confetti);
 $("alogout").addEventListener("click",function(){try{sessionStorage.removeItem("mk_admin")}catch(e){}show("shop")});
 $("alist").addEventListener("click",function(e){if(e.target&&e.target.id==="subBack"){adminEnter("deputy")}});
 $("aaddBtn").addEventListener("click",function(){openForm(null)});
