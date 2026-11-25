@@ -282,7 +282,7 @@ button,input,select,textarea{font-family:inherit}
   </main>
 </div>
 
-<div id="bf" aria-label="בלאק פריידיי"><small>BLACK FRIDAY · בלאק פריידיי</small><b id="bfp"></b><span id="bfs">הנחה על כל האתר</span></div>
+<div id="bf" aria-label="בלאק פריידיי"><small id="bft">BLACK FRIDAY</small><b id="bfp"></b><span id="bfs">הנחה על כל האתר</span></div>
 
 <div id="admin">
   <div id="alogin">
@@ -325,7 +325,7 @@ button,input,select,textarea{font-family:inherit}
 
     <main class="awrap" id="acalView" hidden>
       <div class="ahead"><h1>לוח הנחות שנתי</h1><button type="button" class="btn ghost" id="acBack">חזרה</button></div>
-      <p class="hint">הוסף תאריכי הנחות. הלקוחות רואים אותם בלוח. שים לב: הלוח רק מציג, וההנחה עצמה מופעלת בנפרד.</p>
+      <p class="hint">הוסף תאריכי הנחות. הלקוחות רואים אותם בלוח. אם כתבת אחוז, ההנחה על כל החנות מופעלת לבד בתאריכים האלה ומתכבה לבד אחריהם, גם ליום בודד. בלי אחוז, זה רק מופיע בלוח.</p>
       <div class="dpanel">
         <div class="field"><label for="ceTitle">שם (למשל בלאק פריידיי)</label><input id="ceTitle" autocomplete="off" maxlength="60"></div>
         <div class="grid2">
@@ -410,25 +410,34 @@ function errText(e){
   if(e==="FORBIDDEN")return "אין לך הרשאה לפעולה הזו.";
   return "משהו השתבש. נסה שוב.";
 }
-var GLOBAL=0;
+var GLOBAL=0,MANUAL=0,AUTO=0;
 function effPct(p){return Math.max(+p.discount||0,GLOBAL)}
 function effPrice(p){var d=effPct(p);return d>0?Math.round(+p.price*(100-d)/100):+p.price}
 function priceHtml(p){var d=effPct(p);return d>0?'₪'+esc(effPrice(p))+'<span class="oldp">₪'+esc(p.price)+'</span><span class="dbadge">-'+d+'%</span>':'₪'+esc(p.price)}
+function bfInfo(){
+  var today="";try{today=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Jerusalem"})}catch(e){}
+  if(!today)return null;
+  var live=null;
+  (EVENTS||[]).forEach(function(e){if(e.pct>0&&e.from<=today&&today<=e.to&&(!live||e.pct>live.pct))live=e});
+  if(live)return {mode:"live",top:live.title,big:Math.max(live.pct,GLOBAL)+"%",sub:"הנחה על כל האתר"};
+  if(GLOBAL>0)return {mode:"live",top:"מבצע",big:GLOBAL+"%",sub:"הנחה על כל האתר"};
+  var soon=null,lim=new Date(Date.now()+7*864e5).toLocaleDateString("en-CA",{timeZone:"Asia/Jerusalem"});
+  (EVENTS||[]).forEach(function(e){if(e.pct>0&&e.from>today&&e.from<=lim&&(!soon||e.from<soon.from))soon=e});
+  if(soon){var a=soon.from.split("-");return {mode:"soon",top:soon.title,big:(+a[2])+"."+(+a[1]),sub:soon.pct+"% הנחה על כל האתר"}}
+  return null;
+}
 function updateBanner(){
   var b=$("bf");if(!b)return;
   var inAdmin=$("landing").style.display==="none";
-  var today="";try{today=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Jerusalem"})}catch(e){}
-  var tease=GLOBAL<=0&&today&&today<="2026-11-27";
-  var live=GLOBAL>0;
-  if((live||tease)&&!inAdmin&&!bfClosed){
-    $("bfp").textContent=live?GLOBAL+"%":"27.11";
-    $("bfs").textContent=live?"הנחה על כל האתר":"50% הנחה על כל האתר";
+  var inf=bfInfo();
+  if(inf&&!inAdmin){
+    $("bft").textContent=inf.top;$("bfp").textContent=inf.big;$("bfs").textContent=inf.sub;
     b.style.display="block";setTimeout(function(){b.classList.add("on")},60)}
-  else{b.classList.remove("on");if(!(live||tease)||inAdmin)b.style.display="none"}
+  else{b.classList.remove("on");b.style.display="none"}
 }
 var bfClosed=false;
 function loadProducts(cb){
-  rpc("list_products").then(function(j){if(Array.isArray(j))products=j;loaded=true;return rpc("get_settings").then(function(g){GLOBAL=+(g&&g.global)||0}).catch(function(){})}).catch(function(){loaded=true}).then(function(){updateBanner();if(cb)cb()});
+  rpc("list_products").then(function(j){if(Array.isArray(j))products=j;loaded=true;return rpc("get_settings").then(function(g){GLOBAL=+(g&&g.global)||0;MANUAL=+(g&&g.manual)||0;AUTO=+(g&&g.auto)||0}).catch(function(){}).then(function(){return rpc("list_events").then(function(e){if(Array.isArray(e))EVENTS=e}).catch(function(){})})}).catch(function(){loaded=true}).then(function(){updateBanner();if(cb)cb()});
 }
 loadProducts(function(){renderShop()});
 
@@ -669,13 +678,13 @@ $("alist").addEventListener("click",function(e){
 });
 
 /* ---------- discounts (admin) ---------- */
-function gdNote(){$("gdNote").textContent=GLOBAL>0?"פעיל עכשיו: "+GLOBAL+"% הנחה על כל החנות, והשלט מופיע ללקוחות.":"אין כרגע הנחה לכל החנות."}
-$("gdBtn").addEventListener("click",function(){var h=!$("gdPanel").hidden;$("gdPanel").hidden=h;if(!h){$("gdPct").value=GLOBAL||"";gdNote()}});
+function gdNote(){var t=MANUAL>0?"הנחה ידנית פעילה: "+MANUAL+"%. ":"אין הנחה ידנית. ";t+=AUTO>0?"והיום מופעלת הנחה אוטומטית מהלוח: "+AUTO+"%. ":"";t+="הנחות עם אחוז בלוח ההנחות מופעלות לבד בתאריכים שלהן.";$("gdNote").textContent=t}
+$("gdBtn").addEventListener("click",function(){var h=!$("gdPanel").hidden;$("gdPanel").hidden=h;if(!h){$("gdPct").value=MANUAL||"";gdNote()}});
 function gdSet(v){
   if(v===""||isNaN(+v)||+v<0||+v>90){$("gdNote").textContent="כתוב אחוז בין 0 ל-90";return}
   $("gdNote").textContent="שומר...";
   rpc("set_global_discount",{p_code:CODE,p_pct:Math.round(+v)}).then(function(j){
-    if(j&&typeof j.global==="number"){GLOBAL=j.global;bfClosed=false;gdNote();$("gdPct").value=GLOBAL||"";aRender()}
+    if(j&&typeof j.global==="number"){MANUAL=j.global;GLOBAL=Math.max(MANUAL,AUTO);bfClosed=false;gdNote();$("gdPct").value=MANUAL||"";aRender()}
     else $("gdNote").textContent=errText(j&&j.error)
   }).catch(function(){$("gdNote").textContent="השמירה נכשלה. נסה שוב."});
 }
@@ -706,6 +715,7 @@ var MONTHS=["ינואר","פברואר","מרץ","אפריל","מאי","יוני
 function pad(n){return (n<10?"0":"")+n}
 function iso(y,m,d){return y+"-"+pad(m+1)+"-"+pad(d)}
 function fmtD(s){var a=String(s).split("-");return +a[2]+"."+ +a[1]+"."+a[0]}
+function refreshSettings(){rpc("get_settings").then(function(g){GLOBAL=+(g&&g.global)||0;MANUAL=+(g&&g.manual)||0;AUTO=+(g&&g.auto)||0;updateBanner()}).catch(function(){})}
 function loadEvents(cb){rpc("list_events").then(function(j){if(Array.isArray(j))EVENTS=j;if(cb)cb()}).catch(function(){if(cb)cb()})}
 function evRange(e){return e.from===e.to?fmtD(e.from):fmtD(e.from)+" עד "+fmtD(e.to)}
 function evRow(e,del){
@@ -743,14 +753,14 @@ $("ceAdd").addEventListener("click",function(){
   if(pc!==""&&(isNaN(+pc)||+pc<0||+pc>90)){$("ceErr").textContent="אחוז בין 0 ל-90";return}
   $("ceErr").textContent="שומר...";
   rpc("admin_add_event",{p_code:CODE,p_from:f,p_to:to||null,p_title:t,p_pct:pc===""?null:Math.round(+pc)}).then(function(j){
-    if(j&&j.items){EVENTS=j.items;$("ceErr").textContent="";$("ceTitle").value="";$("ceFrom").value="";$("ceTo").value="";$("cePct").value="";ceRender()}
+    if(j&&j.items){EVENTS=j.items;refreshSettings();$("ceErr").textContent="";$("ceTitle").value="";$("ceFrom").value="";$("ceTo").value="";$("cePct").value="";ceRender()}
     else $("ceErr").textContent=errText(j&&j.error)
   }).catch(function(){$("ceErr").textContent="השמירה נכשלה. נסה שוב."});
 });
 $("ceList").addEventListener("click",function(e){
   var b=e.target.closest("button[data-evdel]");if(!b)return;
   if(b.dataset.sure!=="1"){b.dataset.sure="1";b.textContent="בטוח? מחק";return}
-  rpc("admin_del_event",{p_code:CODE,p_id:b.dataset.evdel}).then(function(j){if(j&&j.items){EVENTS=j.items;ceRender()}}).catch(function(){});
+  rpc("admin_del_event",{p_code:CODE,p_id:b.dataset.evdel}).then(function(j){if(j&&j.items){EVENTS=j.items;refreshSettings();ceRender()}}).catch(function(){});
 });
 
 /* ---------- checkout ---------- */
