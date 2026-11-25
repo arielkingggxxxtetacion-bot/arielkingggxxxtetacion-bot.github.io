@@ -80,6 +80,10 @@ button,input,select,textarea{font-family:inherit}
 #gta a.gbtn{display:flex;align-items:center;justify-content:center;min-height:50px;margin-top:10px;border-radius:14px;background:#FF3B30;color:#fff;font-weight:800;text-decoration:none;font-size:16px}
 #gta a.gsrc{display:block;margin-top:8px;color:#8FB4FF;font-size:14px;word-break:break-all}
 #gta .gnote{margin-top:20px;font-size:13px;opacity:.7;line-height:1.5}
+
+.heart{position:absolute;bottom:8px;left:8px;z-index:2;width:42px;height:42px;border:0;border-radius:50%;background:rgba(255,255,255,.92);color:#E8467C;font-size:24px;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;padding:0;transition:transform .15s}
+.heart.on{background:#E8467C;color:#fff;animation:hpop .35s}
+@keyframes hpop{0%{transform:scale(.6)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
 .soldBadge{position:absolute;top:8px;right:8px;background:#0F1B33;color:#fff;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px}
 .card.isSold .photo img{opacity:.55}
 .info{padding:12px 14px 14px}
@@ -566,21 +570,28 @@ loadProducts(function(){renderShop()});
 document.addEventListener("click",function(e){if(e.target&&e.target.id==="retryLoad"){loadErr=false;loadTry=0;$("grid").innerHTML='<div class="noStock">טוען...</div>';loadProducts(function(){renderShop()})}});
 
 var CUR=[],curItem=0;
-var SQ="",SCAT="";
+var SQ="",SCAT="",SLIKE=false,SAV=false,LIKES=[];
+try{LIKES=JSON.parse(localStorage.getItem("mk_likes")||"[]");if(!Array.isArray(LIKES))LIKES=[]}catch(e){LIKES=[]}
+function saveLikes(){try{localStorage.setItem("mk_likes",JSON.stringify(LIKES))}catch(e){}}
+function liked(id){return LIKES.indexOf(String(id))>-1}
+function toggleLike(id){id=String(id);var i=LIKES.indexOf(id);if(i>-1)LIKES.splice(i,1);else LIKES.push(id);saveLikes()}
+function heartHtml(x){var on=liked(x.id);return '<button type="button" class="heart'+(on?' on':'')+'" data-like="'+esc(x.id)+'" aria-label="'+(on?'הסר מהאהבתי':'אהבתי')+'" aria-pressed="'+on+'">'+(on?'\u2665':'\u2661')+'</button>'}
 function isNew(x){var t=+x.id;return t>1e12&&Date.now()-t<3*864e5}
 function shopItems(){
   return products.filter(function(x){
     if(SCAT&&x.cat!==SCAT)return false;
+    if(SLIKE&&!liked(x.id))return false;
+    if(SAV&&x.sold)return false;
     if(SQ&&(x.name+" "+(x.desc||"")).toLowerCase().indexOf(SQ.toLowerCase())<0)return false;
     return true;
   });
 }
 function fbarRender(){
   var f=$("fbar");if(!f)return;
-  f.hidden=products.length<4;
+  f.hidden=products.length<2;
   if(f.hidden)return;
   var cats=[];products.forEach(function(x){if(x.cat&&cats.indexOf(x.cat)<0)cats.push(x.cat)});
-  $("fchips").innerHTML=['הכל'].concat(cats).map(function(c){var on=(c==="הכל"&&!SCAT)||c===SCAT;return '<button type="button" class="'+(on?'on':'')+'" data-cat="'+esc(c==="הכל"?"":c)+'">'+esc(c)+'</button>'}).join("");
+  $("fchips").innerHTML=['הכל'].concat(cats).map(function(c){var on=(c==="הכל"&&!SCAT)||c===SCAT;return '<button type="button" class="'+(on?'on':'')+'" data-cat="'+esc(c==="הכל"?"":c)+'">'+esc(c)+'</button>'}).join("")+'<button type="button" class="'+(SLIKE?'on':'')+'" data-flt="like">\u2665 אהבתי'+(LIKES.length?' ('+LIKES.length+')':'')+'</button><button type="button" class="'+(SAV?'on':'')+'" data-flt="av">זמינים בלבד</button>';
 }
 
 function renderShop(){
@@ -589,9 +600,9 @@ function renderShop(){
   CUR.forEach(function(x,i){
     var p=PAL[i%PAL.length];
     var inner=x.photos&&x.photos[0]?'<img src="'+x.photos[0]+'" alt="">':'<svg viewBox="0 0 24 24" stroke="'+p[1]+'">'+ICONS[x.icon||0]+'</svg>';
-    g+='<article class="card'+(x.sold?' isSold':'')+'" data-i="'+i+'" role="button" tabindex="0"><div class="photo" style="background:'+p[0]+'" aria-hidden="true">'+inner+(x.sold?'<span class="soldBadge">נמכר</span>':(isNew(x)?'<span class="newBadge">חדש!</span>':''))+'</div><div class="info"><h3>'+esc(x.name)+'</h3><div class="cond">'+esc(x.cond)+'</div><div class="price">'+priceHtml(x)+'</div></div></article>';
+    g+='<article class="card'+(x.sold?' isSold':'')+'" data-i="'+i+'" role="button" tabindex="0"><div class="photo" style="background:'+p[0]+'" aria-hidden="true">'+inner+(x.sold?'<span class="soldBadge">נמכר</span>':(isNew(x)?'<span class="newBadge">חדש!</span>':''))+heartHtml(x)+'</div><div class="info"><h3>'+esc(x.name)+'</h3><div class="cond">'+esc(x.cond)+'</div><div class="price">'+priceHtml(x)+'</div></div></article>';
   });
-  $("grid").innerHTML=g||(loaded?(loadErr?'<div class="noStock">לא הצלחנו לטעון את המוצרים. מנסים שוב...<br><button type="button" class="btn small" id="retryLoad" style="margin-top:12px">נסה שוב עכשיו</button></div>':(products.length?'<div class="noStock">לא מצאנו מוצרים מתאימים</div>':'<div class="noStock">אין לנו מלאי תחזרו מחר ):</div>')):'<div class="noStock">טוען...</div>');
+  $("grid").innerHTML=g||(loaded?(loadErr?'<div class="noStock">לא הצלחנו לטעון את המוצרים. מנסים שוב...<br><button type="button" class="btn small" id="retryLoad" style="margin-top:12px">נסה שוב עכשיו</button></div>':(products.length?'<div class="noStock">'+(SLIKE&&!LIKES.length?'עוד לא סימנת מוצרים באהבתי. לחץ על הלב בכרטיס של מוצר.':'לא מצאנו מוצרים מתאימים')+'</div>':'<div class="noStock">אין לנו מלאי תחזרו מחר ):</div>')):'<div class="noStock">טוען...</div>');
   $("shopNote").hidden=true;
 }
 
@@ -640,8 +651,8 @@ $("toLanding").addEventListener("click",function(){show("landing")});
 $("backShop").addEventListener("click",function(){show("landing")});
 $("backAbout").addEventListener("click",function(){show("landing")});
 $("backProd").addEventListener("click",function(){show("shop")});
-$("grid").addEventListener("click",function(e){var c=e.target.closest(".card");if(c)openProduct(+c.dataset.i)});
-$("grid").addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){var c=e.target.closest(".card");if(c){e.preventDefault();openProduct(+c.dataset.i)}}});
+$("grid").addEventListener("click",function(e){var h=e.target.closest(".heart");if(h){e.stopPropagation();toggleLike(h.dataset.like);renderShop();return}var c=e.target.closest(".card");if(c)openProduct(+c.dataset.i)});
+$("grid").addEventListener("keydown",function(e){if(e.target.closest(".heart"))return;if(e.key==="Enter"||e.key===" "){var c=e.target.closest(".card");if(c){e.preventDefault();openProduct(+c.dataset.i)}}});
 $("thumbs").addEventListener("click",function(e){var b=e.target.closest(".thumb");if(b)setAngle(+b.dataset.a)});
 $("toAdminTop").addEventListener("click",function(){adminEnter("admin")});
 $("toDeputy").addEventListener("click",function(){adminEnter("deputy")});
@@ -900,7 +911,7 @@ function kickOut(){
 
 /* ---------- search, chips, confetti ---------- */
 $("fq").addEventListener("input",function(){SQ=this.value.trim();var a=$("fq");renderShop();var q=$("fq");if(q&&document.activeElement!==q){q.focus()}});
-$("fchips").addEventListener("click",function(e){var b=e.target.closest("button[data-cat]");if(!b)return;SCAT=b.dataset.cat;renderShop()});
+$("fchips").addEventListener("click",function(e){var f=e.target.closest("button[data-flt]");if(f){if(f.dataset.flt==="like")SLIKE=!SLIKE;else SAV=!SAV;renderShop();return}var b=e.target.closest("button[data-cat]");if(!b)return;SCAT=b.dataset.cat;renderShop()});
 function confetti(){
   var c=document.createElement("div");c.id="confetti";
   var col=["#1F5FD6","#FFD54A","#E8467C","#2EB67D","#8E5CF7","#FF8A3D"];
