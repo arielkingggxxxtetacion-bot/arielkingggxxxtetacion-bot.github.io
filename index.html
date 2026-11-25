@@ -84,6 +84,18 @@ button,input,select,textarea{font-family:inherit}
 .heart{position:absolute;bottom:8px;left:8px;z-index:2;width:42px;height:42px;border:0;border-radius:50%;background:rgba(255,255,255,.92);color:#E8467C;font-size:24px;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.2);display:flex;align-items:center;justify-content:center;padding:0;transition:transform .15s}
 .heart.on{background:#E8467C;color:#fff;animation:hpop .35s}
 @keyframes hpop{0%{transform:scale(.6)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+
+#lb{position:fixed;inset:0;z-index:99995;background:rgba(0,0,0,.94);display:none;align-items:center;justify-content:center}
+#lb.on{display:flex}
+#lb .lbs{position:absolute;inset:0;overflow:auto;display:flex;align-items:center;justify-content:center;-webkit-overflow-scrolling:touch}
+#lb img{max-width:100%;max-height:100%;object-fit:contain;transition:width .2s}
+#lb img.z{max-width:none;max-height:none;width:230%;object-fit:contain}
+#lb .lbs.z{align-items:flex-start;justify-content:flex-start}
+#lb .lbx{position:absolute;top:14px;left:14px;z-index:3;width:48px;height:48px;border:0;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;font-size:22px}
+#lb .lbn{position:absolute;top:50%;left:10px;z-index:3;width:48px;height:60px;margin-top:-30px;border:0;border-radius:14px;background:rgba(255,255,255,.2);color:#fff;font-size:34px}
+#lb .lbn.r{left:auto;right:10px}
+#lb .lbc{position:absolute;bottom:22px;left:0;right:0;text-align:center;color:#fff;font-size:15px;z-index:3;pointer-events:none}
+#mainimg{cursor:zoom-in}
 .soldBadge{position:absolute;top:8px;right:8px;background:#0F1B33;color:#fff;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px}
 .card.isSold .photo img{opacity:.55}
 .info{padding:12px 14px 14px}
@@ -229,6 +241,8 @@ button,input,select,textarea{font-family:inherit}
 </head>
 <body>
 
+
+<div id="lb" aria-hidden="true"><button type="button" class="lbx" id="lbClose" aria-label="סגירה">&#10005;</button><button type="button" class="lbn" id="lbPrev" aria-label="הקודם">&#8250;</button><button type="button" class="lbn r" id="lbNext" aria-label="הבא">&#8249;</button><div class="lbs" id="lbScroll"><img id="lbImg" alt=""></div><div class="lbc" id="lbCount"></div></div>
 <div id="share" aria-hidden="true">
   <button type="button" class="sx" id="shareClose" aria-label="סגירה">&#8595;</button>
   <h2>ספרו לחברים &#128722;</h2>
@@ -599,7 +613,7 @@ function renderShop(){
   var g="";
   CUR.forEach(function(x,i){
     var p=PAL[i%PAL.length];
-    var inner=x.photos&&x.photos[0]?'<img src="'+x.photos[0]+'" alt="">':'<svg viewBox="0 0 24 24" stroke="'+p[1]+'">'+ICONS[x.icon||0]+'</svg>';
+    var inner=x.photos&&x.photos[0]?'<img src="'+x.photos[0]+'" alt="" loading="lazy" decoding="async">':'<svg viewBox="0 0 24 24" stroke="'+p[1]+'">'+ICONS[x.icon||0]+'</svg>';
     g+='<article class="card'+(x.sold?' isSold':'')+'" data-i="'+i+'" role="button" tabindex="0"><div class="photo" style="background:'+p[0]+'" aria-hidden="true">'+inner+(x.sold?'<span class="soldBadge">נמכר</span>':(isNew(x)?'<span class="newBadge">חדש!</span>':''))+heartHtml(x)+'</div><div class="info"><h3>'+esc(x.name)+'</h3><div class="cond">'+esc(x.cond)+'</div><div class="price">'+priceHtml(x)+'</div></div></article>';
   });
   $("grid").innerHTML=g||(loaded?(loadErr?'<div class="noStock">לא הצלחנו לטעון את המוצרים. מנסים שוב...<br><button type="button" class="btn small" id="retryLoad" style="margin-top:12px">נסה שוב עכשיו</button></div>':(products.length?'<div class="noStock">'+(SLIKE&&!LIKES.length?'עוד לא סימנת מוצרים באהבתי. לחץ על הלב בכרטיס של מוצר.':'לא מצאנו מוצרים מתאימים')+'</div>':'<div class="noStock">אין לנו מלאי תחזרו מחר ):</div>')):'<div class="noStock">טוען...</div>');
@@ -609,15 +623,25 @@ function renderShop(){
 var ANG=["","translate(12 12) scale(1.5) translate(-12 -12)","translate(12 12) scale(-1 1) translate(-12 -12)","rotate(14 12 12)"];
 function tileSvg(ic,p,a){return '<svg viewBox="0 0 24 24" stroke="'+p[1]+'" aria-hidden="true"><g transform="'+ANG[a]+'">'+ICONS[ic]+'</g></svg>'}
 function setAngle(a){
+  curAngle=a;
   var it=CUR[curItem],p=PAL[curItem%PAL.length],m=$("mainimg"),real=it.photos&&it.photos.length;
   if(real){m.style.background="#F3F6FB";m.innerHTML='<img src="'+it.photos[a]+'" alt="">';$("angle").textContent="תמונה "+(a+1)+" מתוך "+it.photos.length}
   else{m.style.background=p[0];m.innerHTML=tileSvg(it.icon||0,p,a);$("angle").textContent="זווית "+(a+1)+" מתוך 4"}
   var th=document.querySelectorAll(".thumb");
   for(var k=0;k<th.length;k++){th[k].setAttribute("aria-pressed",k===a?"true":"false")}
 }
+function renderThumbs(it,p){
+  var real=it.photos&&it.photos.length;
+  var n=real?Math.max(it.photos.length,0):4,t="";
+  for(var a=0;a<n;a++){
+    t+='<button type="button" class="thumb" data-a="'+a+'" aria-label="תמונה '+(a+1)+'" style="background:'+(real?"#fff":p[0])+'">'+(real?'<img src="'+it.photos[a]+'" alt="">':tileSvg(it.icon||0,p,a))+'</button>';
+  }
+  $("thumbs").innerHTML=t;
+}
+var curAngle=0;
 function openProduct(i){
   curItem=i;
-  var it=CUR[i],p=PAL[i%PAL.length],real=it.photos&&it.photos.length;
+  var it=CUR[i],p=PAL[i%PAL.length];
   $("pname").textContent=it.name;
   $("pprice").innerHTML=priceHtml(it);
   $("pcond").textContent=it.cond;
@@ -627,13 +651,17 @@ function openProduct(i){
   $("pdesc").textContent=it.desc||"אין תיאור למוצר זה.";
   $("pnote").hidden=!it.sample;
   $("orderBtn").hidden=!!it.sold;
-  var n=real?it.photos.length:4,t="";
-  for(var a=0;a<n;a++){
-    t+='<button type="button" class="thumb" data-a="'+a+'" aria-label="תמונה '+(a+1)+'" style="background:'+(real?"#fff":p[0])+'">'+(real?'<img src="'+it.photos[a]+'" alt="">':tileSvg(it.icon||0,p,a))+'</button>';
-  }
-  $("thumbs").innerHTML=t;
-  setAngle(0);
+  renderThumbs(it,p);
+  curAngle=0;setAngle(0);
   show("product");
+  if(!it.sample&&!it._full&&(it.nphotos||0)>(it.photos?it.photos.length:0)){
+    var id=it.id;
+    rpc("get_product",{p_id:String(id)}).then(function(ph){
+      if(!Array.isArray(ph)||!ph.length)return;
+      it.photos=ph;it._full=true;
+      if(CUR[curItem]===it){renderThumbs(it,p);setAngle(Math.min(curAngle,ph.length-1))}
+    }).catch(function(){});
+  }
 }
 
 var VIEWS=["landing","shop","about","product","admin","checkout","calendar","gta"];
@@ -669,7 +697,37 @@ var WHO="",ROLE="admin",editId=null,photos=[],pendingDel=null;
 function isIn(){try{return sessionStorage.getItem("mk_admin")==="1"}catch(e){return false}}
 function refreshAdmin(cb){
   if(ROLE==="sub"){loadSub(cb);return}
-  rpc("admin_list",{p_code:CODE}).then(function(j){if(j&&j.items)products=j.items;if(ROLE==="deputy")loadSick(cb);else if(cb)cb()}).catch(function(){if(cb)cb()});
+  rpc("admin_list",{p_code:CODE}).then(function(j){if(j&&j.items)products=j.items;if(ROLE==="admin")setTimeout(backfillThumbs,800);if(ROLE==="deputy")loadSick(cb);else if(cb)cb()}).catch(function(){if(cb)cb()});
+}
+
+function makeThumb(src,cb){
+  var img=new Image();
+  img.onload=function(){
+    var s=Math.min(1,360/Math.max(img.width,img.height));
+    var c=document.createElement("canvas");c.width=Math.round(img.width*s);c.height=Math.round(img.height*s);
+    c.getContext("2d").drawImage(img,0,0,c.width,c.height);
+    cb(c.toDataURL("image/jpeg",0.7));
+  };
+  img.onerror=function(){cb(null)};
+  img.src=src;
+}
+var backfilled=false;
+function backfillThumbs(){
+  if(backfilled||!(ROLE==="admin"))return;
+  var todo=products.filter(function(p){return p.nphotos>0&&!p.has_thumb});
+  if(!todo.length){backfilled=true;return}
+  backfilled=true;
+  (function next(){
+    var p=todo.shift();
+    if(!p){refreshAdmin(function(){aRender()});return}
+    rpc("get_product",{p_id:String(p.id)}).then(function(ph){
+      if(!Array.isArray(ph)||!ph[0])return next();
+      makeThumb(ph[0],function(t){
+        if(!t)return next();
+        rpc("admin_set_thumb",{p_code:CODE,p_id:String(p.id),p_thumb:t}).then(next).catch(next)
+      });
+    }).catch(next);
+  })();
 }
 var subData={adding_at:null,recent:[]};
 function loadSub(cb){rpc("sub_view",{p_code:CODE}).then(function(j){if(j&&j.recent)subData=j;if(cb)cb()}).catch(function(){if(cb)cb()})}
@@ -745,6 +803,20 @@ function aPhotos(){
   $("apickBtn").hidden=photos.length>=4;
 }
 function openForm(id){
+  var q=products.filter(function(x){return x.id===id})[0];
+  if(q&&!q._full&&(q.nphotos||0)>(q.photos?q.photos.length:0)){
+    $("aferr").textContent="";
+    rpc("get_product",{p_id:String(id)}).then(function(ph){
+      if(Array.isArray(ph)&&ph.length){q.photos=ph;q._full=true}
+      if(!q._full){alert_("לא הצלחנו לטעון את התמונות. נסה שוב.");return}
+      openForm2(id);
+    }).catch(function(){alert_("לא הצלחנו לטעון את התמונות. נסה שוב.")});
+    return;
+  }
+  openForm2(id);
+}
+function alert_(t){var e=$("alerr");if(e)e.textContent=t;var b=$("astats");if(b)b.textContent=t}
+function openForm2(id){
   if(!id){rpc("set_adding",{p_code:CODE,p_on:true}).catch(function(){})}
   editId=id||null;
   var p=products.filter(function(x){return x.id===id})[0];
@@ -920,6 +992,30 @@ function confetti(){
 }
 $("orderBtn").addEventListener("click",confetti);
 $("mailBtn").addEventListener("click",confetti);
+
+/* ---------- photo lightbox ---------- */
+(function(){
+  var idx=0,zoom=false,sx=0;
+  function items(){var it=CUR[curItem];return it&&it.photos&&it.photos.length?it.photos:[]}
+  function draw(){
+    var a=items();if(!a.length)return;
+    if(idx<0)idx=a.length-1;if(idx>=a.length)idx=0;
+    $("lbImg").src=a[idx];$("lbCount").textContent=(idx+1)+" / "+a.length;
+    $("lbPrev").style.display=$("lbNext").style.display=a.length>1?"block":"none";
+    zoom=false;$("lbImg").classList.remove("z");$("lbScroll").classList.remove("z");
+  }
+  function open_(){if(!items().length)return;idx=curAngle||0;$("lb").classList.add("on");$("lb").setAttribute("aria-hidden","false");draw()}
+  function close_(){$("lb").classList.remove("on");$("lb").setAttribute("aria-hidden","true");setAngle(Math.min(idx,items().length-1))}
+  $("mainimg").addEventListener("click",open_);
+  $("lbClose").addEventListener("click",close_);
+  $("lbPrev").addEventListener("click",function(e){e.stopPropagation();idx--;draw()});
+  $("lbNext").addEventListener("click",function(e){e.stopPropagation();idx++;draw()});
+  $("lbImg").addEventListener("click",function(e){e.stopPropagation();zoom=!zoom;$("lbImg").classList.toggle("z",zoom);$("lbScroll").classList.toggle("z",zoom);if(zoom){var s_=$("lbScroll");s_.scrollLeft=(s_.scrollWidth-s_.clientWidth)/2;s_.scrollTop=(s_.scrollHeight-s_.clientHeight)/2}});
+  $("lbScroll").addEventListener("click",function(){if(!zoom)close_()});
+  $("lbScroll").addEventListener("touchstart",function(e){sx=e.touches[0].clientX},{passive:true});
+  $("lbScroll").addEventListener("touchend",function(e){if(zoom)return;var dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>60&&items().length>1){idx+=dx<0?1:-1;draw()}},{passive:true});
+  document.addEventListener("keydown",function(e){if(!$("lb").classList.contains("on"))return;if(e.key==="Escape")close_();if(e.key==="ArrowLeft"){idx++;draw()}if(e.key==="ArrowRight"){idx--;draw()}});
+})();
 $("alogout").addEventListener("click",function(){try{sessionStorage.removeItem("mk_admin")}catch(e){}show("shop")});
 $("alist").addEventListener("click",function(e){if(e.target&&e.target.id==="subBack"){adminEnter("deputy")}});
 $("aaddBtn").addEventListener("click",function(){openForm(null)});
@@ -944,11 +1040,14 @@ $("asaveBtn").addEventListener("click",function(){
   if(price===""||+price<0){$("aferr").textContent="כתוב מחיר";return}
   var rec={name:name,price:+price,cond:$("afcond").value,cat:$("afcat").value,desc:$("afdesc").value.trim(),photos:photos.slice(),cost:$("afcost").value===""?null:+$("afcost").value,worth:$("afworth").value===""?null:+$("afworth").value,hand:$("afhand").value};
   var btn=$("asaveBtn");btn.disabled=true;$("aferr").textContent="שומר...";
-  rpc("admin_save",{p_code:CODE,p_id:editId||null,p_name:rec.name,p_price:rec.price,p_cond:rec.cond,p_cat:rec.cat,p_desc:rec.desc,p_photos:rec.photos,p_cost:rec.cost,p_worth:rec.worth,p_hand:rec.hand}).then(function(j){
-    btn.disabled=false;
-    if(j&&j.items){products=j.items;$("aferr").textContent="";$("aformView").hidden=true;aList()}
-    else{$("aferr").textContent=errText(j&&j.error)}
-  }).catch(function(){btn.disabled=false;$("aferr").textContent="השמירה נכשלה. בדוק חיבור או נסה פחות תמונות."});
+  function doSave(th){
+    rpc("admin_save",{p_code:CODE,p_id:editId||null,p_name:rec.name,p_price:rec.price,p_cond:rec.cond,p_cat:rec.cat,p_desc:rec.desc,p_photos:rec.photos,p_cost:rec.cost,p_worth:rec.worth,p_hand:rec.hand,p_thumb:th}).then(function(j){
+      btn.disabled=false;
+      if(j&&j.items){products=j.items;$("aferr").textContent="";$("aformView").hidden=true;aList()}
+      else{$("aferr").textContent=errText(j&&j.error)}
+    }).catch(function(){btn.disabled=false;$("aferr").textContent="השמירה נכשלה. בדוק חיבור או נסה פחות תמונות."});
+  }
+  if(rec.photos.length)makeThumb(rec.photos[0],function(t){doSave(t)});else doSave(null);
 });
 $("alist").addEventListener("click",function(e){
   var b=e.target.closest("button[data-act]");
