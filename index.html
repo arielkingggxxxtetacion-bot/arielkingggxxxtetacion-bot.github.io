@@ -724,7 +724,7 @@ function show(name){
 }
 $("enter").addEventListener("click",function(){show("shop")});
 $("toAbout").addEventListener("click",function(){show("about")});
-$("toGta").addEventListener("click",function(){show("gta")});
+$("toGta").addEventListener("click",function(){show("gta");if(typeof songPlay==="function")songPlay()});
 $("backGta").addEventListener("click",function(){show("landing")});
 $("toLanding").addEventListener("click",function(){show("landing")});
 $("backShop").addEventListener("click",function(){show("landing")});
@@ -1103,12 +1103,12 @@ $("mailBtn").addEventListener("click",confetti);
 
 /* ---------- GTA trailer song player (YouTube embed, loads only on tap) ---------- */
 function songStop(){var b=$("songBox");if(b){b.innerHTML="";b.hidden=true}var i=$("songIc");if(i)i.innerHTML="&#9654;"}
-$("songBtn").addEventListener("click",function(){
-  var b=$("songBox");
-  if(!b.hidden){songStop();return}
+function songPlay(){
+  var b=$("songBox");if(!b||!b.hidden)return;
   b.innerHTML='<div style="position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden;background:#000"><iframe src="https://www.youtube-nocookie.com/embed/5dPwBWvmcbQ?autoplay=1&playsinline=1&rel=0" title="Flower in a Hurricane" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><a class="gsrc" href="https://youtu.be/5dPwBWvmcbQ" target="_blank" rel="noopener" style="direction:ltr;text-align:center">אם לא מתנגן: פתח ביוטיוב</a>';
   b.hidden=false;$("songIc").innerHTML="&#9632;";
-});
+}
+$("songBtn").addEventListener("click",function(){if(!$("songBox").hidden)songStop();else songPlay()});
 /* page itself must not zoom; only product photos zoom (lightbox) */
 ["gesturestart","gesturechange","gestureend"].forEach(function(ev){document.addEventListener(ev,function(e){e.preventDefault()},{passive:false})});
 $("sndBtn").addEventListener("click",function(){SND_ON=!SND_ON;try{localStorage.setItem("mk_snd",SND_ON?"1":"0")}catch(e){}syncSnd();if(SND_ON)sfx("pop")});
