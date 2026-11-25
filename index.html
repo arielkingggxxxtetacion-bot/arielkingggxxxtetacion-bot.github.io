@@ -65,7 +65,9 @@ button,input,select,textarea{font-family:inherit}
 #confetti i{position:absolute;top:-20px;width:10px;height:16px;border-radius:2px;animation:cfall 1.8s ease-in forwards}
 @keyframes cfall{to{transform:translate(var(--dx),105vh) rotate(var(--rot));opacity:.9}}
 
-.gtaLink{position:absolute;bottom:34px;left:8px;z-index:3;min-height:46px;padding:0 10px;border:0;border-radius:14px;background:#111;color:#FFD54A;font-size:14px;font-weight:800;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.gtaLink{position:absolute;bottom:104px;left:50%;transform:translateX(-50%);z-index:3;min-height:58px;padding:6px 22px;border:0;border-radius:16px;background:#111;color:#FFD54A;box-shadow:0 6px 18px rgba(0,0,0,.25);text-align:center;line-height:1.15}
+.gtaLink small{display:block;font-size:11px;font-weight:700;color:#fff;opacity:.85}
+.gtaLink b{display:block;font-size:24px;font-weight:800;letter-spacing:1px;direction:ltr}
 #gta{display:none;background:#0F1B33;color:#fff;min-height:100vh;padding:0 0 60px}
 #gta .gtop{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;position:sticky;top:0;background:#0F1B33;z-index:2;border-bottom:1px solid rgba(255,255,255,.12)}
 #gta .gtop b{font-size:18px}
@@ -239,7 +241,7 @@ button,input,select,textarea{font-family:inherit}
   <div class="veil"></div>
   <button type="button" class="adminTop" id="toAdminTop">כניסת מנהלים</button>
   <button type="button" class="adminTop left" id="toDeputy">כניסת סגני מנהלים</button>
-  <button type="button" class="gtaLink" id="toGta" aria-label="טריקים ל-GTA 6">GTA 6 &#127918;</button>
+  <button type="button" class="gtaLink" id="toGta" aria-label="ספיישל מארקטלי טריקים, GTA VI"><small>ספיישל מארקטלי טריקים</small><b>GTA VI</b></button>
   <div class="content">
     <div class="hero">
       <svg viewBox="0 0 160 160" role="img" aria-label="Marketly logo"><rect width="160" height="160" rx="36" fill="#1F5FD6"/><g transform="translate(20 20) scale(5)"><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 8H21L18.9 15.6Q18.6 16.5 17.5 16.5H9.8Q8.9 16.5 8.6 15.5Z" fill="#FFFFFF"/><g stroke="#1F5FD6" stroke-width="1.3" stroke-linecap="round"><line x1="10.5" y1="10.2" x2="10.5" y2="14.3"/><line x1="13.5" y1="10.2" x2="13.5" y2="14.3"/><line x1="16.5" y1="10.2" x2="16.5" y2="14.3"/></g><circle cx="9" cy="20" r="2" fill="#FFFFFF"/><circle cx="18" cy="20" r="2" fill="#FFFFFF"/></g></svg>
