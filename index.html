@@ -130,7 +130,7 @@ button,input,select,textarea{font-family:inherit}
 .adminTop.left{right:auto;left:14px}
 .oldp{color:#8A97B1;text-decoration:line-through;font-weight:500;font-size:.75em;margin-inline-start:8px}
 .dbadge{direction:ltr;unicode-bidi:isolate;display:inline-block;background:#111;color:#FFD54A;border-radius:8px;font-size:.55em;font-weight:800;padding:2px 8px;margin-inline-start:8px;vertical-align:middle}
-#bf{display:none;position:fixed;right:0;top:42%;z-index:60;background:#111;color:#fff;border-radius:16px 0 0 16px;border:2px solid #FFD54A;border-right:0;padding:12px 16px 12px 14px;max-width:210px;box-shadow:0 8px 28px rgba(0,0,0,.35);transform:translateX(115%);transition:transform .7s cubic-bezier(.2,.9,.3,1.1);text-align:center;cursor:pointer;line-height:1.25}
+#bf{display:none;position:fixed;right:0;top:42%;z-index:60;background:#111;color:#fff;border-radius:16px 0 0 16px;border:2px solid #FFD54A;border-right:0;padding:12px 16px 12px 14px;max-width:210px;box-shadow:0 8px 28px rgba(0,0,0,.35);transform:translateX(115%);transition:transform .7s cubic-bezier(.2,.9,.3,1.1);text-align:center;line-height:1.25;pointer-events:none}
 #bf.on{transform:none}
 #bf small{display:block;color:#FFD54A;font-weight:800;letter-spacing:.5px;font-size:13px}
 #bf b{display:block;font-size:26px;color:#fff}
@@ -252,7 +252,7 @@ button,input,select,textarea{font-family:inherit}
   </main>
 </div>
 
-<div id="bf" role="button" aria-label="בלאק פריידיי"><small>BLACK FRIDAY · בלאק פריידיי</small><b id="bfp"></b><span id="bfs">הנחה על כל האתר</span></div>
+<div id="bf" aria-label="בלאק פריידיי"><small>BLACK FRIDAY · בלאק פריידיי</small><b id="bfp"></b><span id="bfs">הנחה על כל האתר</span></div>
 
 <div id="admin">
   <div id="alogin">
@@ -381,7 +381,6 @@ function updateBanner(){
   else{b.classList.remove("on");if(!(live||tease)||inAdmin)b.style.display="none"}
 }
 var bfClosed=false;
-$("bf").addEventListener("click",function(){bfClosed=true;$("bf").classList.remove("on")});
 function loadProducts(cb){
   rpc("list_products").then(function(j){if(Array.isArray(j))products=j;loaded=true;return rpc("get_settings").then(function(g){GLOBAL=+(g&&g.global)||0}).catch(function(){})}).catch(function(){loaded=true}).then(function(){updateBanner();if(cb)cb()});
 }
