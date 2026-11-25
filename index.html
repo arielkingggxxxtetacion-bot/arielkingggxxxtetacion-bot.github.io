@@ -403,7 +403,7 @@ $("thumbs").addEventListener("click",function(e){var b=e.target.closest(".thumb"
 $("toAdmin").addEventListener("click",function(){adminEnter()});
 $("toAdminTop").addEventListener("click",function(){adminEnter("admin")});
 $("toDeputy").addEventListener("click",function(){adminEnter("deputy")});
-var subMode=false;
+var subMode=false,entryMode="admin";
 $("toSub").addEventListener("click",function(){
   subMode=!subMode;
   $("alogTitle").textContent=subMode?"כניסת סגני סגנים":"כניסת סגני מנהלים";
@@ -421,6 +421,7 @@ function refreshAdmin(cb){
 var subData={adding_at:null,recent:[]};
 function loadSub(cb){rpc("sub_view",{p_code:CODE}).then(function(j){if(j&&j.recent)subData=j;if(cb)cb()}).catch(function(){if(cb)cb()})}
 function adminEnter(mode){
+  entryMode=mode==="deputy"?"deputy":"admin";
   $("alogTitle").textContent=mode==="deputy"?"כניסת סגני מנהלים":mode==="sub"?"כניסת סגני סגנים":"כניסת מנהלים";
   $("toSub").hidden=(mode!=="deputy");subMode=false;$("toSub").textContent="סגני סגנים";
   CODE="";ROLE="admin";
@@ -523,7 +524,7 @@ function fmtLeft(ms){
 $("alogin-btn").addEventListener("click",function(){
   var pv=$("apw").value;
   $("alerr").textContent="בודק...";
-  rpc("login",{p_code:pv}).then(function(j){
+  rpc("login",{p_code:pv,p_scope:subMode?"sub":entryMode}).then(function(j){
     if(j&&j.role){
       CODE=pv;ROLE=j.role;
       $("alerr").textContent="";$("apw").value="";
