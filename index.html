@@ -407,7 +407,7 @@ var SAMPLES=[
 
 /* ---------- מסד נתונים (Supabase) ---------- */
 var SUPA_URL="https://pptnlrrbkepdlryyewfn.supabase.co",SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdG5scnJia2VwZGxyeXlld2ZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2MDA4MjUsImV4cCI6MjExMTE3NjgyNX0.7CGRTALdDS-m4UElksIYFBi8EDtWe1ya5__D9-ma6Mk";
-var products=[],loaded=false,CODE="",ROLE_="";
+var products=[],loaded=false,loadErr=false,loadTry=0,CODE="",ROLE_="";
 function rpc(fn,args){
   return fetch(SUPA_URL+"/rest/v1/rpc/"+fn,{method:"POST",headers:{"content-type":"application/json","apikey":SUPA_KEY,"authorization":"Bearer "+SUPA_KEY},body:JSON.stringify(args||{})})
   .then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error("http "+r.status);return j})});
@@ -450,9 +450,15 @@ function updateBanner(){
 }
 var bfClosed=false;
 function loadProducts(cb){
-  rpc("list_products").then(function(j){if(Array.isArray(j))products=j;loaded=true;return rpc("get_settings").then(function(g){GLOBAL=+(g&&g.global)||0;MANUAL=+(g&&g.manual)||0;AUTO=+(g&&g.auto)||0}).catch(function(){}).then(function(){return rpc("list_events").then(function(e){if(Array.isArray(e))EVENTS=e}).catch(function(){})})}).catch(function(){loaded=true}).then(function(){updateBanner();if(cb)cb()});
+  rpc("list_products").then(function(j){if(!Array.isArray(j))throw new Error("bad");products=j;loaded=true;loadErr=false;loadTry=0;try{localStorage.setItem("mk_prod",JSON.stringify(j))}catch(e){}return rpc("get_settings").then(function(g){GLOBAL=+(g&&g.global)||0;MANUAL=+(g&&g.manual)||0;AUTO=+(g&&g.auto)||0}).catch(function(){}).then(function(){return rpc("list_events").then(function(e){if(Array.isArray(e))EVENTS=e}).catch(function(){})})}).catch(function(){
+    loaded=true;
+    if(!products.length){try{var c=JSON.parse(localStorage.getItem("mk_prod")||"[]");if(Array.isArray(c)&&c.length)products=c}catch(e){}}
+    if(!products.length){loadErr=true}
+    if(loadTry<4){loadTry++;setTimeout(function(){loadProducts(function(){if(typeof renderShop==="function")renderShop()})},2500*loadTry)}
+  }).then(function(){updateBanner();if(cb)cb()});
 }
 loadProducts(function(){renderShop()});
+document.addEventListener("click",function(e){if(e.target&&e.target.id==="retryLoad"){loadErr=false;loadTry=0;$("grid").innerHTML='<div class="noStock">טוען...</div>';loadProducts(function(){renderShop()})}});
 
 var CUR=[],curItem=0;
 function shopItems(){return products}
@@ -465,7 +471,7 @@ function renderShop(){
     var inner=x.photos&&x.photos[0]?'<img src="'+x.photos[0]+'" alt="">':'<svg viewBox="0 0 24 24" stroke="'+p[1]+'">'+ICONS[x.icon||0]+'</svg>';
     g+='<article class="card'+(x.sold?' isSold':'')+'" data-i="'+i+'" role="button" tabindex="0"><div class="photo" style="background:'+p[0]+'" aria-hidden="true">'+inner+(x.sold?'<span class="soldBadge">נמכר</span>':'')+'</div><div class="info"><h3>'+esc(x.name)+'</h3><div class="cond">'+esc(x.cond)+'</div><div class="price">'+priceHtml(x)+'</div></div></article>';
   });
-  $("grid").innerHTML=g||(loaded?'<div class="noStock">אין לנו מלאי תחזרו מחר ):</div>':'<div class="noStock">טוען...</div>');
+  $("grid").innerHTML=g||(loaded?(loadErr?'<div class="noStock">לא הצלחנו לטעון את המוצרים. מנסים שוב...<br><button type="button" class="btn small" id="retryLoad" style="margin-top:12px">נסה שוב עכשיו</button></div>':'<div class="noStock">אין לנו מלאי תחזרו מחר ):</div>'):'<div class="noStock">טוען...</div>');
   $("shopNote").hidden=true;
 }
 
