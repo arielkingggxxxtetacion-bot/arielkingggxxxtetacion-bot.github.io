@@ -128,6 +128,21 @@ button,input,select,textarea{font-family:inherit}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
 .demo{margin:24px 0 0;padding:12px 14px;border-radius:12px;background:#FFF6D6;color:#6B5200;font-size:14px}
 .adminTop.left{right:auto;left:14px}
+.oldp{color:#8A97B1;text-decoration:line-through;font-weight:500;font-size:.75em;margin-inline-start:8px}
+.dbadge{direction:ltr;unicode-bidi:isolate;display:inline-block;background:#111;color:#FFD54A;border-radius:8px;font-size:.55em;font-weight:800;padding:2px 8px;margin-inline-start:8px;vertical-align:middle}
+#bf{display:none;position:fixed;right:0;top:42%;z-index:60;background:#111;color:#fff;border-radius:16px 0 0 16px;border:2px solid #FFD54A;border-right:0;padding:12px 16px 12px 14px;max-width:210px;box-shadow:0 8px 28px rgba(0,0,0,.35);transform:translateX(115%);transition:transform .7s cubic-bezier(.2,.9,.3,1.1);text-align:center;cursor:pointer;line-height:1.25}
+#bf.on{transform:none}
+#bf small{display:block;color:#FFD54A;font-weight:800;letter-spacing:.5px;font-size:13px}
+#bf b{display:block;font-size:26px;color:#fff}
+#bf span{display:block;font-size:13px;opacity:.9}
+.dbar{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 12px}
+.dpanel{background:#fff;border:1px solid #E5E9F2;border-radius:16px;padding:14px;margin-bottom:12px}
+.dpanel h2{margin:0 0 8px;font-size:17px}
+.dline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.dline input{width:90px;min-height:48px;border:1.5px solid #DCE3F0;border-radius:10px;padding:0 12px;font-size:18px;text-align:center}
+.dnote{color:#5A6781;font-size:14px;margin:8px 0 0}
+.drow{background:#fff;border:1px solid #E5E9F2;border-radius:16px;padding:12px;margin-bottom:10px}
+.drow b{display:block;font-size:16px;margin-bottom:4px}
 #aapp{position:relative;min-height:100vh;isolation:isolate}
 #aapp.bgAdmin::before{content:"";position:fixed;inset:0;z-index:-1;background:linear-gradient(rgba(8,12,26,.30),rgba(8,12,26,.50)),url(admin-bg.jpg) center/cover no-repeat}
 #aapp.bgAdmin .ahead h1,#aapp.bgAdmin .sub,#aapp.bgAdmin .hint,#aapp.bgAdmin .hint b,#aapp.bgAdmin .field label{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.55)}
@@ -237,6 +252,8 @@ button,input,select,textarea{font-family:inherit}
   </main>
 </div>
 
+<div id="bf" role="button" aria-label="בלאק פריידיי"><small>BLACK FRIDAY · בלאק פריידיי</small><b id="bfp"></b><span>הנחה על כל האתר</span></div>
+
 <div id="admin">
   <div id="alogin">
     <button type="button" class="subTop" id="toSub" hidden>סגני סגנים</button>
@@ -259,9 +276,21 @@ button,input,select,textarea{font-family:inherit}
 
     <main class="awrap" id="alistView">
       <div class="ahead"><h1>המוצרים שלי</h1><button type="button" class="btn" id="aaddBtn">הוספת מוצר</button></div>
+      <div class="dbar" id="dbar" hidden><button type="button" class="btn ghost small" id="gdBtn">הנחה לכל החנות</button><button type="button" class="btn ghost small" id="pdBtn">הנחות למוצרים</button></div>
+      <div class="dpanel" id="gdPanel" hidden>
+        <h2>הנחה לכל החנות</h2>
+        <div class="dline"><input id="gdPct" type="number" inputmode="numeric" min="0" max="90" placeholder="%"><span>אחוז הנחה</span><button type="button" class="btn small" id="gdSave">שמירה</button><button type="button" class="btn danger small" id="gdOff">כיבוי</button></div>
+        <p class="dnote" id="gdNote"></p>
+      </div>
       <p class="sub" id="astats"></p>
       <div id="alist"></div>
       <div class="demo">המוצרים נשמרים במסד נתונים ומופיעים לכל הלקוחות.</div>
+    </main>
+
+    <main class="awrap" id="adiscView" hidden>
+      <div class="ahead"><h1>הנחות למוצרים</h1><button type="button" class="btn ghost" id="adBack">חזרה</button></div>
+      <p class="hint">בכל מוצר כתוב אחוז הנחה ולחץ שמירה. 0 מבטל את ההנחה. אם יש גם הנחה לכל החנות, המחיר נקבע לפי ההנחה הגבוהה מביניהן.</p>
+      <div id="adList"></div>
     </main>
 
     <main class="awrap" id="aformView" hidden>
@@ -335,8 +364,20 @@ function errText(e){
   if(e==="FORBIDDEN")return "אין לך הרשאה לפעולה הזו.";
   return "משהו השתבש. נסה שוב.";
 }
+var GLOBAL=0;
+function effPct(p){return Math.max(+p.discount||0,GLOBAL)}
+function effPrice(p){var d=effPct(p);return d>0?Math.round(+p.price*(100-d)/100):+p.price}
+function priceHtml(p){var d=effPct(p);return d>0?'₪'+esc(effPrice(p))+'<span class="oldp">₪'+esc(p.price)+'</span><span class="dbadge">-'+d+'%</span>':'₪'+esc(p.price)}
+function updateBanner(){
+  var b=$("bf");if(!b)return;
+  var inAdmin=$("admin").style.display==="block";
+  if(GLOBAL>0&&!inAdmin&&!bfClosed){$("bfp").textContent=GLOBAL+"%";b.style.display="block";setTimeout(function(){b.classList.add("on")},60)}
+  else{b.classList.remove("on");if(GLOBAL<=0||inAdmin)b.style.display="none"}
+}
+var bfClosed=false;
+$("bf").addEventListener("click",function(){bfClosed=true;$("bf").classList.remove("on")});
 function loadProducts(cb){
-  rpc("list_products").then(function(j){if(Array.isArray(j))products=j;loaded=true;if(cb)cb()}).catch(function(){loaded=true;if(cb)cb()});
+  rpc("list_products").then(function(j){if(Array.isArray(j))products=j;loaded=true;return rpc("get_settings").then(function(g){GLOBAL=+(g&&g.global)||0}).catch(function(){})}).catch(function(){loaded=true}).then(function(){updateBanner();if(cb)cb()});
 }
 loadProducts(function(){renderShop()});
 
@@ -349,7 +390,7 @@ function renderShop(){
   CUR.forEach(function(x,i){
     var p=PAL[i%PAL.length];
     var inner=x.photos&&x.photos[0]?'<img src="'+x.photos[0]+'" alt="">':'<svg viewBox="0 0 24 24" stroke="'+p[1]+'">'+ICONS[x.icon||0]+'</svg>';
-    g+='<article class="card'+(x.sold?' isSold':'')+'" data-i="'+i+'" role="button" tabindex="0"><div class="photo" style="background:'+p[0]+'" aria-hidden="true">'+inner+(x.sold?'<span class="soldBadge">נמכר</span>':'')+'</div><div class="info"><h3>'+esc(x.name)+'</h3><div class="cond">'+esc(x.cond)+'</div><div class="price">₪'+esc(x.price)+'</div></div></article>';
+    g+='<article class="card'+(x.sold?' isSold':'')+'" data-i="'+i+'" role="button" tabindex="0"><div class="photo" style="background:'+p[0]+'" aria-hidden="true">'+inner+(x.sold?'<span class="soldBadge">נמכר</span>':'')+'</div><div class="info"><h3>'+esc(x.name)+'</h3><div class="cond">'+esc(x.cond)+'</div><div class="price">'+priceHtml(x)+'</div></div></article>';
   });
   $("grid").innerHTML=g||(loaded?'<div class="noStock">אין לנו מלאי תחזרו מחר ):</div>':'<div class="noStock">טוען...</div>');
   $("shopNote").hidden=true;
@@ -368,7 +409,7 @@ function openProduct(i){
   curItem=i;
   var it=CUR[i],p=PAL[i%PAL.length],real=it.photos&&it.photos.length;
   $("pname").textContent=it.name;
-  $("pprice").textContent="₪"+it.price;
+  $("pprice").innerHTML=priceHtml(it);
   $("pcond").textContent=it.cond;
   $("pavail").textContent=it.sold?"נמכר":"משלוח זמין";
   $("scond").textContent=it.cond;
@@ -389,6 +430,7 @@ var VIEWS=["landing","shop","about","product","admin","checkout"];
 function show(name){
   if(name==="shop")renderShop();
   VIEWS.forEach(function(v){$(v).style.display=(v===name)?"block":"none"});
+  updateBanner();
   try{window.scrollTo(0,0)}catch(e){}
 }
 $("enter").addEventListener("click",function(){show("shop")});
@@ -429,9 +471,9 @@ function adminEnter(mode){
   setAdminLogged(false);
   $("alerr").textContent="";
 }
-function setAdminLogged(on){$("alogin").hidden=on;$("aapp").hidden=!on;$("aapp").className=(on&&ROLE==="admin")?"bgAdmin":"";var h=document.querySelector("#alistView h1");if(h)h.textContent=ROLE==="sub"?"סגני סגנים":ROLE==="deputy"?"מידע פנימי על המוצרים":"המוצרים שלי";var d=document.querySelector("#alistView .demo");if(d)d.hidden=(ROLE==="deputy"||ROLE==="sub");if(on)aList()}
-function aList(){if(ROLE==="admin"&&!$("aformView").hidden){rpc("set_adding",{p_code:CODE,p_on:false}).catch(function(){})}$("alistView").hidden=false;$("aformView").hidden=true;aRender();try{window.scrollTo(0,0)}catch(e){}}
-function aForm(){$("alistView").hidden=true;$("aformView").hidden=false;try{window.scrollTo(0,0)}catch(e){}}
+function setAdminLogged(on){$("alogin").hidden=on;$("aapp").hidden=!on;$("aapp").className=(on&&ROLE==="admin")?"bgAdmin":"";var h=document.querySelector("#alistView h1");if(h)h.textContent=ROLE==="sub"?"סגני סגנים":ROLE==="deputy"?"מידע פנימי על המוצרים":"המוצרים שלי";var d=document.querySelector("#alistView .demo");if(d)d.hidden=(ROLE==="deputy"||ROLE==="sub");$("dbar").hidden=!(on&&ROLE==="admin");$("gdPanel").hidden=true;updateBanner();if(on)aList()}
+function aList(){if(ROLE==="admin"&&!$("aformView").hidden){rpc("set_adding",{p_code:CODE,p_on:false}).catch(function(){})}$("alistView").hidden=false;$("aformView").hidden=true;$("adiscView").hidden=true;aRender();try{window.scrollTo(0,0)}catch(e){}}
+function aForm(){$("alistView").hidden=true;$("adiscView").hidden=true;$("aformView").hidden=false;try{window.scrollTo(0,0)}catch(e){}}
 
 function nf(v){return v==null||v===""?"לא הוזן":"₪"+v}
 function deputyRender(){
@@ -470,7 +512,7 @@ function aRender(){
   $("alist").innerHTML=products.map(function(p){
     var img=p.photos&&p.photos[0]?'<img src="'+p.photos[0]+'" alt="">':"אין תמונה";
     var del=ROLE==='deputy'?'':pendingDel===p.id?'<button type="button" class="btn danger small" data-act="del2" data-id="'+p.id+'">בטוח? מחק</button>':'<button type="button" class="btn danger small" data-act="del" data-id="'+p.id+'">מחיקה</button>';
-    return '<div class="row"><div class="athumb">'+img+'</div><div class="rinfo"><b>'+esc(p.name)+'</b><span class="meta"><span class="aprice">₪'+esc(p.price)+'</span> · '+esc(p.cond)+' · '+esc(p.cat)+'</span><div><span class="chip'+(p.sold?' sold':'')+'">'+(p.sold?'נמכר':'זמין')+'</span></div></div><div class="racts"><button type="button" class="btn ghost small" data-act="edit" data-id="'+p.id+'">עריכה</button><button type="button" class="btn ghost small" data-act="sold" data-id="'+p.id+'">'+(p.sold?'סמן כזמין':'סמן כנמכר')+'</button>'+del+'</div></div>';
+    return '<div class="row"><div class="athumb">'+img+'</div><div class="rinfo"><b>'+esc(p.name)+'</b><span class="meta"><span class="aprice">₪'+esc(p.price)+'</span>'+(effPct(p)>0?' <span class="chip">הנחה '+effPct(p)+'% ← ₪'+effPrice(p)+'</span>':'')+' · '+esc(p.cond)+' · '+esc(p.cat)+'</span><div><span class="chip'+(p.sold?' sold':'')+'">'+(p.sold?'נמכר':'זמין')+'</span></div></div><div class="racts"><button type="button" class="btn ghost small" data-act="edit" data-id="'+p.id+'">עריכה</button><button type="button" class="btn ghost small" data-act="sold" data-id="'+p.id+'">'+(p.sold?'סמן כזמין':'סמן כנמכר')+'</button>'+del+'</div></div>';
   }).join("");
 }
 function aPhotos(){
@@ -576,12 +618,44 @@ $("alist").addEventListener("click",function(e){
   if(act==="del2"){pendingDel=null;rpc("admin_delete",{p_code:CODE,p_id:id}).then(function(j){if(j&&j.items){products=j.items;aRender()}}).catch(function(){})}
 });
 
+/* ---------- discounts (admin) ---------- */
+function gdNote(){$("gdNote").textContent=GLOBAL>0?"פעיל עכשיו: "+GLOBAL+"% הנחה על כל החנות, והשלט מופיע ללקוחות.":"אין כרגע הנחה לכל החנות."}
+$("gdBtn").addEventListener("click",function(){var h=!$("gdPanel").hidden;$("gdPanel").hidden=h;if(!h){$("gdPct").value=GLOBAL||"";gdNote()}});
+function gdSet(v){
+  if(v===""||isNaN(+v)||+v<0||+v>90){$("gdNote").textContent="כתוב אחוז בין 0 ל-90";return}
+  $("gdNote").textContent="שומר...";
+  rpc("set_global_discount",{p_code:CODE,p_pct:Math.round(+v)}).then(function(j){
+    if(j&&typeof j.global==="number"){GLOBAL=j.global;bfClosed=false;gdNote();$("gdPct").value=GLOBAL||"";aRender()}
+    else $("gdNote").textContent=errText(j&&j.error)
+  }).catch(function(){$("gdNote").textContent="השמירה נכשלה. נסה שוב."});
+}
+$("gdSave").addEventListener("click",function(){gdSet($("gdPct").value)});
+$("gdOff").addEventListener("click",function(){gdSet("0")});
+function adRender(){
+  if(!products.length){$("adList").innerHTML='<div class="empty"><b>עדיין אין מוצרים</b></div>';return}
+  $("adList").innerHTML=products.map(function(p){
+    return '<div class="drow"><b>'+esc(p.name)+'</b><div class="meta" style="color:#5A6781;font-size:14px;margin-bottom:8px">מחיר מקורי ₪'+esc(p.price)+(effPct(p)>0?' · כרגע ₪'+effPrice(p):'')+'</div><div class="dline"><input type="number" inputmode="numeric" min="0" max="90" placeholder="%" value="'+(+p.discount||"")+'" data-dpct="'+p.id+'"><span>אחוז הנחה</span><button type="button" class="btn small" data-dsave="'+p.id+'">שמירה</button></div></div>'
+  }).join("");
+}
+$("pdBtn").addEventListener("click",function(){$("alistView").hidden=true;$("adiscView").hidden=false;adRender();try{window.scrollTo(0,0)}catch(e){}});
+$("adBack").addEventListener("click",function(){aList()});
+$("adList").addEventListener("click",function(e){
+  var b=e.target.closest("button[data-dsave]");if(!b)return;
+  var id=b.dataset.dsave,inp=document.querySelector('input[data-dpct="'+id+'"]'),v=inp.value===""?0:+inp.value;
+  if(isNaN(v)||v<0||v>90){b.textContent="0 עד 90";return}
+  b.textContent="שומר...";
+  rpc("set_product_discount",{p_code:CODE,p_id:id,p_pct:Math.round(v)}).then(function(j){
+    if(j&&j.items){products=j.items;adRender();var nb=document.querySelector('button[data-dsave="'+id+'"]');if(nb){nb.textContent="נשמר ✓"}}
+    else b.textContent=errText(j&&j.error)
+  }).catch(function(){b.textContent="נכשל. נסה שוב"});
+});
+
 /* ---------- checkout ---------- */
 var MAIL="arielreuven22@gmail.com";
 $("orderBtn").addEventListener("click",function(){
   var it=CUR[curItem];
-  $("ckItem").innerHTML='<b>'+esc(it.name)+'</b> · ₪'+esc(it.price);
-  $("mailBtn").href="mailto:"+MAIL+"?subject="+encodeURIComponent("פנייה מ-Marketly")+"&body="+encodeURIComponent("היי, התעניינתי ב: "+it.name+"\n\n");
+  $("ckItem").innerHTML='<b>'+esc(it.name)+'</b> · '+priceHtml(it);
+  $("mailBtn").href="mailto:"+MAIL+"?subject="+encodeURIComponent("פנייה מ-Marketly")+"&body="+encodeURIComponent("היי, התעניינתי ב: "+it.name+" (₪"+effPrice(it)+(effPct(it)>0?", אחרי "+effPct(it)+"% הנחה":"")+")\n\n");
   show("checkout");
 });
 $("backCheck").addEventListener("click",function(){show("product")});
