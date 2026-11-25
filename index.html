@@ -32,7 +32,7 @@ button,input,select,textarea{font-family:inherit}
 #share .sb.alt{background:rgba(255,255,255,.18);color:#fff}
 #shareMsg{min-height:22px;margin-top:12px;font-size:15px;font-weight:700}
 html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
-#lb,#lb *{touch-action:pan-x pan-y}
+#lb,#lb *{touch-action:none}
 .hero svg,.aboutTop svg{touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
 #egg{position:fixed;left:50%;bottom:90px;transform:translateX(-50%) translateY(20px);background:#143F94;color:#fff;font-weight:800;font-size:20px;padding:14px 22px;border-radius:16px;z-index:99998;opacity:0;transition:.3s;pointer-events:none;text-align:center;max-width:86vw}
 #egg.on{opacity:1;transform:translateX(-50%) translateY(0)}
@@ -89,8 +89,8 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
 
 #lb{position:fixed;inset:0;z-index:99995;background:rgba(0,0,0,.94);display:none;align-items:center;justify-content:center}
 #lb.on{display:flex}
-#lb .lbs{position:absolute;inset:0;overflow:auto;display:flex;align-items:center;justify-content:center;-webkit-overflow-scrolling:touch}
-#lb img{max-width:100%;max-height:100%;object-fit:contain;transition:width .2s}
+#lb .lbs{position:absolute;inset:0;overflow:hidden;display:flex;align-items:center;justify-content:center;-webkit-overflow-scrolling:touch}
+#lb img{max-width:100%;max-height:100%;object-fit:contain;transform-origin:center;will-change:transform;-webkit-user-select:none;user-select:none;-webkit-user-drag:none}
 #lb img.z{max-width:none;max-height:none;width:230%;object-fit:contain}
 #lb .lbs.z{align-items:flex-start;justify-content:flex-start}
 #lb .lbx{position:absolute;top:14px;left:14px;z-index:3;width:48px;height:48px;border:0;border-radius:50%;background:rgba(255,255,255,.2);color:#fff;font-size:22px}
@@ -995,27 +995,58 @@ function confetti(){
 $("orderBtn").addEventListener("click",confetti);
 $("mailBtn").addEventListener("click",confetti);
 
-/* ---------- photo lightbox ---------- */
+/* ---------- photo lightbox (pinch / double-tap zoom, swipe) ---------- */
 (function(){
-  var idx=0,zoom=false,sx=0;
+  var idx=0,sc=1,tx=0,ty=0,s0=1,d0=0,x0=0,y0=0,tx0=0,ty0=0,moved=false,lastTap=0,mode="";
   function items(){var it=CUR[curItem];return it&&it.photos&&it.photos.length?it.photos:[]}
+  function apply(anim){var im=$("lbImg");im.style.transition=anim?"transform .2s":"none";im.style.transform="translate("+tx+"px,"+ty+"px) scale("+sc+")"}
+  function clamp(){
+    var im=$("lbImg"),w=im.clientWidth*sc,h=im.clientHeight*sc,W=$("lbScroll").clientWidth,H=$("lbScroll").clientHeight;
+    var mx=Math.max(0,(w-W)/2),my=Math.max(0,(h-H)/2);
+    tx=Math.max(-mx,Math.min(mx,tx));ty=Math.max(-my,Math.min(my,ty));
+  }
+  function reset(){sc=1;tx=0;ty=0;apply(false)}
   function draw(){
     var a=items();if(!a.length)return;
     if(idx<0)idx=a.length-1;if(idx>=a.length)idx=0;
     $("lbImg").src=a[idx];$("lbCount").textContent=(idx+1)+" / "+a.length;
     $("lbPrev").style.display=$("lbNext").style.display=a.length>1?"block":"none";
-    zoom=false;$("lbImg").classList.remove("z");$("lbScroll").classList.remove("z");
+    reset();
   }
   function open_(){if(!items().length)return;idx=curAngle||0;$("lb").classList.add("on");$("lb").setAttribute("aria-hidden","false");draw()}
-  function close_(){$("lb").classList.remove("on");$("lb").setAttribute("aria-hidden","true");setAngle(Math.min(idx,items().length-1))}
+  function close_(){$("lb").classList.remove("on");$("lb").setAttribute("aria-hidden","true");reset();setAngle(Math.min(idx,items().length-1))}
+  function toggle(){if(sc>1.05){sc=1;tx=0;ty=0}else{sc=2.6}clamp();apply(true)}
+  function dist(t){var dx=t[0].clientX-t[1].clientX,dy=t[0].clientY-t[1].clientY;return Math.sqrt(dx*dx+dy*dy)}
   $("mainimg").addEventListener("click",open_);
   $("lbClose").addEventListener("click",close_);
   $("lbPrev").addEventListener("click",function(e){e.stopPropagation();idx--;draw()});
   $("lbNext").addEventListener("click",function(e){e.stopPropagation();idx++;draw()});
-  $("lbImg").addEventListener("click",function(e){e.stopPropagation();zoom=!zoom;$("lbImg").classList.toggle("z",zoom);$("lbScroll").classList.toggle("z",zoom);if(zoom){var s_=$("lbScroll");s_.scrollLeft=(s_.scrollWidth-s_.clientWidth)/2;s_.scrollTop=(s_.scrollHeight-s_.clientHeight)/2}});
-  $("lbScroll").addEventListener("click",function(){if(!zoom)close_()});
-  $("lbScroll").addEventListener("touchstart",function(e){sx=e.touches[0].clientX},{passive:true});
-  $("lbScroll").addEventListener("touchend",function(e){if(zoom)return;var dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>60&&items().length>1){idx+=dx<0?1:-1;draw()}},{passive:true});
+  $("lbImg").addEventListener("dblclick",function(e){e.stopPropagation();toggle()});
+  $("lbScroll").addEventListener("click",function(e){if(e.target===$("lbScroll")&&sc<=1.05)close_()});
+  var el=$("lbScroll");
+  el.addEventListener("touchstart",function(e){
+    if(e.touches.length===2){mode="pinch";d0=dist(e.touches);s0=sc;moved=true}
+    else if(e.touches.length===1){mode="one";x0=e.touches[0].clientX;y0=e.touches[0].clientY;tx0=tx;ty0=ty;moved=false}
+  },{passive:true});
+  el.addEventListener("touchmove",function(e){
+    e.preventDefault();
+    if(mode==="pinch"&&e.touches.length===2){sc=Math.max(1,Math.min(5,s0*dist(e.touches)/d0));clamp();apply(false)}
+    else if(mode==="one"&&e.touches.length===1){
+      var dx=e.touches[0].clientX-x0,dy=e.touches[0].clientY-y0;
+      if(Math.abs(dx)>8||Math.abs(dy)>8)moved=true;
+      if(sc>1.05){tx=tx0+dx;ty=ty0+dy;clamp();apply(false)}
+    }
+  },{passive:false});
+  el.addEventListener("touchend",function(e){
+    if(e.touches.length>0)return;
+    if(mode==="pinch"){if(sc<1.05)reset();else apply(true);mode="";return}
+    if(mode==="one"){
+      var t=e.changedTouches[0],dx=t.clientX-x0;
+      if(sc<=1.05&&Math.abs(dx)>60&&items().length>1){idx+=dx<0?1:-1;draw()}
+      else if(!moved){var n=Date.now();if(n-lastTap<320){toggle();lastTap=0}else lastTap=n}
+    }
+    mode="";
+  },{passive:true});
   document.addEventListener("keydown",function(e){if(!$("lb").classList.contains("on"))return;if(e.key==="Escape")close_();if(e.key==="ArrowLeft"){idx++;draw()}if(e.key==="ArrowRight"){idx--;draw()}});
 })();
 
