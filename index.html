@@ -790,6 +790,19 @@ function kickOut(){
   $("shareIg").addEventListener("click",function(){copy(txt()+" "+URL_,"הועתק. הדביקו בפוסט או בסטורי");setTimeout(function(){window.open("https://www.instagram.com/","_blank")},900)});
   $("shareCopy").addEventListener("click",function(){copy(txt()+" "+URL_,"הועתק!")});
 })();
+
+/* ---------- auto refresh of the shop ---------- */
+(function(){
+  var busy=false;
+  function tick(){
+    if(busy||document.hidden)return;
+    var sh=$("shop");if(!sh||sh.style.display!=="block")return;
+    busy=true;loadProducts(function(){busy=false;renderShop()});
+  }
+  setInterval(tick,20000);
+  document.addEventListener("visibilitychange",function(){if(!document.hidden)tick()});
+  window.addEventListener("pageshow",function(e){if(e.persisted)tick()});
+})();
 $("alogout").addEventListener("click",function(){try{sessionStorage.removeItem("mk_admin")}catch(e){}show("shop")});
 $("alist").addEventListener("click",function(e){if(e.target&&e.target.id==="subBack"){adminEnter("deputy")}});
 $("aaddBtn").addEventListener("click",function(){openForm(null)});
