@@ -128,7 +128,7 @@ button,input,select,textarea{font-family:inherit}
 .actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
 .demo{margin:24px 0 0;padding:12px 14px;border-radius:12px;background:#FFF6D6;color:#6B5200;font-size:14px}
 .adminTop.left{right:auto;left:14px}
-.calLink{display:block;margin:14px auto 0;background:none;border:0;color:#8A97B1;font-size:12px;text-decoration:underline;padding:6px 10px}
+.calLink{display:block;margin:24px auto 0;min-height:44px;padding:0 22px;border:0;border-radius:12px;background:#E8EEFB;color:#143F94;font-size:15px;font-weight:700}
 .calTop{display:flex;align-items:center;justify-content:space-between;margin:6px 0 10px}
 .calTop button{width:44px;height:44px;border:1.5px solid #DCE3F0;border-radius:12px;background:#fff;color:#1F5FD6;font-size:20px;font-weight:700}
 .calTop b{font-size:20px}
@@ -206,7 +206,6 @@ button,input,select,textarea{font-family:inherit}
     <div class="grid" id="grid"></div>
     <p class="note" id="shopNote">המוצרים והמחירים כאן הם דוגמה בלבד, עד שנעלה את המוצרים האמיתיים.</p>
     <button type="button" class="calLink" id="toCal">לוח הנחות שנתי</button>
-    <button type="button" class="adminLink" id="toAdmin">כניסת מנהלים</button>
   </main>
 </div>
 
@@ -493,7 +492,6 @@ $("backProd").addEventListener("click",function(){show("shop")});
 $("grid").addEventListener("click",function(e){var c=e.target.closest(".card");if(c)openProduct(+c.dataset.i)});
 $("grid").addEventListener("keydown",function(e){if(e.key==="Enter"||e.key===" "){var c=e.target.closest(".card");if(c){e.preventDefault();openProduct(+c.dataset.i)}}});
 $("thumbs").addEventListener("click",function(e){var b=e.target.closest(".thumb");if(b)setAngle(+b.dataset.a)});
-$("toAdmin").addEventListener("click",function(){adminEnter()});
 $("toAdminTop").addEventListener("click",function(){adminEnter("admin")});
 $("toDeputy").addEventListener("click",function(){adminEnter("deputy")});
 var subMode=false,entryMode="admin";
