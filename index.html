@@ -152,6 +152,15 @@ button,input,select,textarea{font-family:inherit}
 #bf b{display:block;font-size:26px;color:#fff}
 #bf span{display:block;font-size:13px;opacity:.9}
 .dbar{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 12px}
+#kick{position:fixed;inset:0;z-index:99999;background:rgba(10,18,40,.82);display:none;align-items:center;justify-content:center;padding:24px}
+#kick.on{display:flex}
+#kick .kb{background:#fff;border-radius:22px;padding:28px 22px;text-align:center;max-width:340px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.4);animation:kpop .35s ease-out,kshake .5s .35s 3}
+#kick .kb b{display:block;font-size:26px;line-height:1.3;color:#143F94}
+#kick .kb span{display:block;font-size:64px;margin-top:8px}
+#kick.out .kb{animation:kfly .9s ease-in forwards}
+@keyframes kpop{from{transform:scale(.3);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes kshake{0%,100%{transform:translateX(0)}25%{transform:translateX(-12px) rotate(-3deg)}75%{transform:translateX(12px) rotate(3deg)}}
+@keyframes kfly{to{transform:translateY(-130vh) rotate(540deg) scale(.2);opacity:0}}
 .sk{display:flex;gap:8px;align-items:center;justify-content:space-between;border:1px solid #E5E9F2;border-radius:12px;padding:10px 12px;margin-top:8px;flex-wrap:wrap}.sk input[type=date]{min-height:48px;border:1.5px solid #DCE3F0;border-radius:10px;padding:0 10px;font-size:16px}.sk input[type=password]{min-height:48px;width:110px;border:1.5px solid #DCE3F0;border-radius:10px;padding:0 10px;font-size:18px;text-align:center}.sk b{font-size:15px}.sk small{display:block;color:#5B6783;font-size:13px}.dpanel{background:#fff;border:1px solid #E5E9F2;border-radius:16px;padding:14px;margin-bottom:12px}
 .dpanel h2{margin:0 0 8px;font-size:17px}
 .dline{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -298,6 +307,7 @@ button,input,select,textarea{font-family:inherit}
     </div>
   </div>
 
+  <div id="kick" aria-live="assertive"><div class="kb"><b>מה אתה מנסה לעשות?!</b><span>😂</span></div></div>
   <div id="aapp" hidden>
     <header class="atop">
       <div class="logo"><svg viewBox="0 0 160 160" aria-hidden="true"><rect width="160" height="160" rx="36" fill="#1F5FD6"/><g transform="translate(20 20) scale(5)"><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 8H21L18.9 15.6Q18.6 16.5 17.5 16.5H9.8Q8.9 16.5 8.6 15.5Z" fill="#FFFFFF"/><g stroke="#1F5FD6" stroke-width="1.3" stroke-linecap="round"><line x1="10.5" y1="10.2" x2="10.5" y2="14.3"/><line x1="13.5" y1="10.2" x2="13.5" y2="14.3"/><line x1="16.5" y1="10.2" x2="16.5" y2="14.3"/></g><circle cx="9" cy="20" r="2" fill="#FFFFFF"/><circle cx="18" cy="20" r="2" fill="#FFFFFF"/></g></svg><span>Marketly</span></div>
@@ -533,7 +543,7 @@ function adminEnter(mode){
   setAdminLogged(false);
   $("alerr").textContent="";
 }
-function setAdminLogged(on){$("alogin").hidden=on;$("aapp").hidden=!on;$("aapp").className=(on&&ROLE==="admin")?"bgAdmin":"";var h=document.querySelector("#alistView h1");if(h)h.textContent=ROLE==="sub"?"סגני סגנים":ROLE==="deputy"?"מידע פנימי על המוצרים":"המוצרים שלי";var d=document.querySelector("#alistView .demo");if(d)d.hidden=(ROLE==="deputy"||ROLE==="sub");$("dbar").hidden=!(on&&ROLE==="admin");$("skBtn").hidden=!(WHO==="admin"||WHO==="admin2");$("gdPanel").hidden=true;$("skPanel").hidden=true;updateBanner();if(on)aList()}
+function setAdminLogged(on){$("alogin").hidden=on;$("aapp").hidden=!on;$("aapp").className=(on&&ROLE==="admin")?"bgAdmin":"";var h=document.querySelector("#alistView h1");if(h)h.textContent=ROLE==="sub"?"סגני סגנים":ROLE==="deputy"?"מידע פנימי על המוצרים":"המוצרים שלי";var d=document.querySelector("#alistView .demo");if(d)d.hidden=(ROLE==="deputy"||ROLE==="sub");$("dbar").hidden=!(on&&ROLE==="admin");$("skBtn").hidden=!(WHO==="admin"||WHO==="admin2");if(on&&(WHO==="ziv"||WHO==="guy")){if(!coverTimer)coverTimer=setInterval(coverCheck,3000)}else{clearInterval(coverTimer);coverTimer=null}$("gdPanel").hidden=true;$("skPanel").hidden=true;updateBanner();if(on)aList()}
 function aList(){if(ROLE==="admin"&&!$("aformView").hidden){rpc("set_adding",{p_code:CODE,p_on:false}).catch(function(){})}$("alistView").hidden=false;$("aformView").hidden=true;$("adiscView").hidden=true;$("acalView").hidden=true;aRender();try{window.scrollTo(0,0)}catch(e){}}
 function aForm(){$("alistView").hidden=true;$("adiscView").hidden=true;$("acalView").hidden=true;$("aformView").hidden=false;try{window.scrollTo(0,0)}catch(e){}}
 
@@ -680,6 +690,28 @@ $("skList").addEventListener("click",function(e){
   var a={p_code:CODE};if(b.dataset.skdel!=="all")a.p_id=+b.dataset.skdel;else a.p_who=$("skWho").value;
   rpc("sick_clear",a).then(function(j){if(j&&j.items){skRender(j.items);$("skErr").textContent="בוטל."}else $("skErr").textContent=errText(j&&j.error)}).catch(function(){});
 });
+
+/* ---------- kick covering deputy when sick mark is cancelled ---------- */
+var coverTimer=null,kicking=false;
+function coverCheck(){
+  if(kicking||$("aapp").hidden||!(WHO==="ziv"||WHO==="guy")){if(!(WHO==="ziv"||WHO==="guy")){clearInterval(coverTimer);coverTimer=null}return}
+  rpc("sick_status",{p_code:CODE}).then(function(j){
+    if(!j)return;
+    if(j.error==="FORBIDDEN"||j.error==="WRONG:4"||(!j.error&&!j[WHO]))kickOut();
+  }).catch(function(){});
+}
+function kickOut(){
+  if(kicking)return;kicking=true;
+  var k=$("kick");k.classList.remove("out");k.classList.add("on");
+  setTimeout(function(){k.classList.add("out")},2100);
+  setTimeout(function(){
+    k.classList.remove("on","out");kicking=false;
+    CODE="";ROLE="admin";WHO="";products=[];
+    try{sessionStorage.removeItem("mk_admin")}catch(e){}
+    clearInterval(coverTimer);coverTimer=null;
+    show("shop");
+  },3100);
+}
 $("alogout").addEventListener("click",function(){try{sessionStorage.removeItem("mk_admin")}catch(e){}show("shop")});
 $("alist").addEventListener("click",function(e){if(e.target&&e.target.id==="subBack"){adminEnter("deputy")}});
 $("aaddBtn").addEventListener("click",function(){openForm(null)});
