@@ -295,9 +295,6 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
   <div class="gbody">
     <h1>טריקים ל-GTA 6</h1>
     <p class="gl">אספתי טיפים בסיסיים ממדריכי משחק שפורסמו, בכתיבה שלי. בסוף יש קישורים לחיפוש סרטונים ביוטיוב.</p>
-    <div class="gsec">&#127925; שיר הטריילר</div>
-    <button type="button" class="gsong" id="songBtn" style="width:100%;border:0;font-family:inherit;text-align:right"><span class="ic" id="songIc">&#9654;</span><span><b>Flower in a Hurricane</b><small>Justice feat. Tame Impala, SZA, King Gizzard &amp; The Lizard Wizard</small></span></button>
-    <div id="songBox" hidden style="margin-top:10px"></div>
     <div class="gsec">כסף</div>
     <div class="gtip"><b>אל תסתובבו עם הרבה מזומן</b>אם הדמות מתה, הכסף שבכיס הולך לאיבוד. בתחילת המשחק כדאי להחביא מזומן בבית, ואחרי שנפתח הבנק בסיפור להפקיד בכספומט.</div>
     <div class="gtip"><b>תכננו בריחה לפני כל שוד</b>לפני שנכנסים לשוד, חשבו איך יוצאים ממנו: איזה רכב מחכה בחוץ ואיזה כביש פנוי. שוד בלי תוכנית בריחה נגמר מהר.</div>
@@ -717,14 +714,13 @@ function show(name){
   if(name==="shop")renderShop();
   var was=VIEWS.filter(function(v){return $(v).style.display==="block"})[0];
   VIEWS.forEach(function(v){$(v).style.display=(v===name)?"block":"none"});
-  if(name!=="gta"&&typeof songStop==="function")songStop();
   if(was!==name){var nv=$(name);nv.classList.remove("vin");void nv.offsetWidth;nv.classList.add("vin");sfx("whoosh");if(name==="shop"){var g_=$("grid");g_.classList.add("anim");setTimeout(function(){g_.classList.remove("anim")},900)}}
   updateBanner();
   try{window.scrollTo(0,0)}catch(e){}
 }
 $("enter").addEventListener("click",function(){show("shop")});
 $("toAbout").addEventListener("click",function(){show("about")});
-$("toGta").addEventListener("click",function(){show("gta");if(typeof songPlay==="function")songPlay()});
+$("toGta").addEventListener("click",function(){show("gta")});
 $("backGta").addEventListener("click",function(){show("landing")});
 $("toLanding").addEventListener("click",function(){show("landing")});
 $("backShop").addEventListener("click",function(){show("landing")});
@@ -1101,14 +1097,6 @@ $("mailBtn").addEventListener("click",confetti);
 })();
 
 
-/* ---------- GTA trailer song player (YouTube embed, loads only on tap) ---------- */
-function songStop(){var b=$("songBox");if(b){b.innerHTML="";b.hidden=true}var i=$("songIc");if(i)i.innerHTML="&#9654;"}
-function songPlay(){
-  var b=$("songBox");if(!b||!b.hidden)return;
-  b.innerHTML='<div style="position:relative;padding-top:56.25%;border-radius:14px;overflow:hidden;background:#000"><iframe src="https://www.youtube-nocookie.com/embed/5dPwBWvmcbQ?autoplay=1&playsinline=1&rel=0" title="Flower in a Hurricane" style="position:absolute;inset:0;width:100%;height:100%;border:0" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div><a class="gsrc" href="https://youtu.be/5dPwBWvmcbQ" target="_blank" rel="noopener" style="direction:ltr;text-align:center">אם לא מתנגן: פתח ביוטיוב</a>';
-  b.hidden=false;$("songIc").innerHTML="&#9632;";
-}
-$("songBtn").addEventListener("click",function(){if(!$("songBox").hidden)songStop();else songPlay()});
 /* page itself must not zoom; only product photos zoom (lightbox) */
 ["gesturestart","gesturechange","gestureend"].forEach(function(ev){document.addEventListener(ev,function(e){e.preventDefault()},{passive:false})});
 $("sndBtn").addEventListener("click",function(){SND_ON=!SND_ON;try{localStorage.setItem("mk_snd",SND_ON?"1":"0")}catch(e){}syncSnd();if(SND_ON)sfx("pop")});
