@@ -221,20 +221,8 @@ button,input,select,textarea{font-family:inherit}
     <h1 style="font-size:26px;margin:0 0 14px">הזמנה</h1>
     <div class="ckItem" id="ckItem"></div>
     <div class="ckItem" style="font-size:15px;color:#143F94;background:#E8F0FE;border-color:#E8F0FE">משלוח עד הבית בלבד. התשלום במקום, במזומן או בביט.</div>
-    <div class="field"><label for="cname">שם מלא</label><input id="cname" autocomplete="name"></div>
-    <div class="field"><label for="cphone">טלפון</label><input id="cphone" type="tel" inputmode="tel" autocomplete="tel"></div>
-    <div class="field" id="caddrF"><label for="caddr">כתובת למשלוח</label><input id="caddr" autocomplete="street-address"></div>
-    <div class="field"><label for="cnote">הערות (לא חובה)</label><textarea id="cnote" style="min-height:80px"></textarea></div>
-    <div class="ckTotal"><span>סה״כ למוצר</span><b id="ckTotal"></b></div>
-    <p class="hint">מחיר המשלוח והזמן מתואמים איתך לפני התשלום.</p>
-    <div class="err" id="cerr" role="alert"></div>
-    <button type="button" class="btn" id="payBtn" style="width:100%">שליחת הזמנה</button>
-    <div id="cres" hidden style="margin-top:16px">
-      <div class="field"><label for="cmsg">פרטי ההזמנה</label><textarea id="cmsg" readonly style="min-height:150px"></textarea></div>
-      <a class="btn" id="cwa" hidden target="_blank" rel="noopener noreferrer" style="display:flex;align-items:center;justify-content:center;text-decoration:none;margin-bottom:10px">שליחה בוואטסאפ</a>
-      <button type="button" class="btn ghost" id="ccopy" style="width:100%">העתקת פרטי ההזמנה</button>
-      <div class="hint" id="cstatus" role="status" style="margin-top:10px"></div>
-    </div>
+    <p class="hint" style="font-size:16px;line-height:1.7;margin:6px 0 16px">כדי להזמין, לחצו על הכפתור ושלחו לנו מייל. כתבו מה שבא לכם, ואנחנו נחזור אליכם ונשאל איזה מוצר אתם רוצים ונתאם משלוח ותשלום.</p>
+    <a class="btn" id="mailBtn" href="#" style="display:flex;align-items:center;justify-content:center;text-decoration:none;width:100%">דברו איתנו במייל</a>
     <p class="note">התשלום במקום, בעת קבלת המוצר: במזומן או בביט.</p>
   </main>
 </div>
@@ -578,37 +566,14 @@ $("alist").addEventListener("click",function(e){
 });
 
 /* ---------- checkout ---------- */
-var WA_NUMBER="";
-var ckMode="delivery";
-function ckSet(m){ckMode="delivery";$("caddrF").hidden=false}
+var MAIL="arielreuven22@gmail.com";
 $("orderBtn").addEventListener("click",function(){
   var it=CUR[curItem];
   $("ckItem").innerHTML='<b>'+esc(it.name)+'</b> · ₪'+esc(it.price);
-  $("ckTotal").textContent="₪"+it.price;
-  $("cerr").textContent="";
-  $("cres").hidden=true;
-  ckSet("delivery");
+  $("mailBtn").href="mailto:"+MAIL+"?subject="+encodeURIComponent("פנייה מ-Marketly")+"&body="+encodeURIComponent("היי, התעניינתי ב: "+it.name+"\n\n");
   show("checkout");
 });
 $("backCheck").addEventListener("click",function(){show("product")});
-$("payBtn").addEventListener("click",function(){
-  var name=$("cname").value.trim(),phone=$("cphone").value.replace(/\D/g,""),addr=$("caddr").value.trim();
-  if(!name){$("cerr").textContent="כתוב שם מלא";return}
-  if(phone.length<9){$("cerr").textContent="כתוב מספר טלפון תקין";return}
-  if(ckMode==="delivery"&&!addr){$("cerr").textContent="כתוב כתובת למשלוח";return}
-  $("cerr").textContent="";
-  var it=CUR[curItem],note=$("cnote").value.trim();
-  var msg="הזמנה חדשה ב-Marketly\nמוצר: "+it.name+" (₪"+it.price+")\nשם: "+name+"\nטלפון: "+$("cphone").value.trim()+"\n"+(ckMode==="delivery"?"משלוח לכתובת: "+addr:"איסוף עצמי")+(note?"\nהערות: "+note:"")+"\nתשלום: במקום, במזומן או בביט";
-  $("cmsg").value=msg;
-  $("cstatus").textContent="";
-  if(WA_NUMBER){$("cwa").href="https://wa.me/"+WA_NUMBER+"?text="+encodeURIComponent(msg);$("cwa").hidden=false}else{$("cwa").hidden=true}
-  $("cres").hidden=false;
-});
-$("ccopy").addEventListener("click",function(){
-  var done=function(){$("cstatus").textContent="הועתק. שלח את זה אלינו כדי להשלים את ההזמנה."};
-  var fail=function(){$("cmsg").select();$("cstatus").textContent="סמן את הטקסט למעלה והעתק אותו."};
-  try{navigator.clipboard.writeText($("cmsg").value).then(done,fail)}catch(e){fail()}
-});
 
 /* ---------- landing background ---------- */
 try{
