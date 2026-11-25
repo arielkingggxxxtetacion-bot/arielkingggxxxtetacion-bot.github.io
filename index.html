@@ -166,6 +166,8 @@ button,input,select,textarea{font-family:inherit}
 #bf small{display:block;color:#FFD54A;font-weight:800;letter-spacing:.5px;font-size:13px}
 #bf b{display:block;font-size:26px;color:#fff}
 #bf span{display:block;font-size:13px;opacity:.9}
+#bf em{display:block;font-style:normal;margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,213,74,.4);font-size:12px;color:#FFD54A;font-weight:700}
+#bf em i{display:block;font-style:normal;font-size:18px;color:#fff;letter-spacing:1px;font-variant-numeric:tabular-nums;direction:ltr}
 .dbar{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 12px}
 #kick,#bigmsg{position:fixed;inset:0;z-index:99999;background:rgba(10,18,40,.82);display:none;align-items:center;justify-content:center;padding:24px}
 #kick.on,#bigmsg.on{display:flex}
@@ -318,7 +320,7 @@ button,input,select,textarea{font-family:inherit}
   </main>
 </div>
 
-<div id="bf" aria-label="בלאק פריידיי"><small id="bft">BLACK FRIDAY</small><b id="bfp"></b><span id="bfs">הנחה על כל האתר</span></div>
+<div id="bf" aria-label="בלאק פריידיי"><small id="bft">BLACK FRIDAY</small><b id="bfp"></b><span id="bfs">הנחה על כל האתר</span><em id="bfc"><u id="bfl" style="text-decoration:none"></u><i id="bft2"></i></em></div>
 
 <div id="admin">
   <div id="alogin">
@@ -455,16 +457,30 @@ var GLOBAL=0,MANUAL=0,AUTO=0;
 function effPct(p){return Math.max(+p.discount||0,GLOBAL)}
 function effPrice(p){var d=effPct(p);return d>0?Math.round(+p.price*(100-d)/100):+p.price}
 function priceHtml(p){var d=effPct(p);return d>0?'₪'+esc(effPrice(p))+'<span class="oldp">₪'+esc(p.price)+'</span><span class="dbadge">-'+d+'%</span>':'₪'+esc(p.price)}
+function jlMid(ds,plus){
+  var a=ds.split("-"),u=Date.UTC(+a[0],+a[1]-1,+a[2]+(plus||0)),off=120;
+  try{var f=new Intl.DateTimeFormat("en-US",{timeZone:"Asia/Jerusalem",timeZoneName:"shortOffset"}).formatToParts(new Date(u)).filter(function(x){return x.type==="timeZoneName"})[0].value;var m=/GMT([+-])(\d+)(?::(\d+))?/.exec(f);if(m)off=(m[1]==="-"?-1:1)*(+m[2]*60+(+m[3]||0))}catch(e){}
+  return u-off*60000;
+}
+var bfT=0,bfTick=null,bfLab="";
+function bfClock(){
+  var el=$("bft2");if(!el||!bfT)return;
+  var d=bfT-Date.now();
+  if(d<=0){clearInterval(bfTick);bfTick=null;bfT=0;if(typeof refreshSettings==="function")refreshSettings();return}
+  var sec=Math.floor(d/1000),dy=Math.floor(sec/86400),h=Math.floor(sec%86400/3600),m=Math.floor(sec%3600/60),x=sec%60;
+  function z(n){return (n<10?"0":"")+n}
+  el.textContent=z(h)+":"+z(m)+":"+z(x);var L=$("bfl");if(L)L.textContent=bfLab+(dy>0?" "+dy+" "+(dy===1?"יום":"ימים"):"");
+}
 function bfInfo(){
   var today="";try{today=new Date().toLocaleDateString("en-CA",{timeZone:"Asia/Jerusalem"})}catch(e){}
   if(!today)return null;
   var live=null;
   (EVENTS||[]).forEach(function(e){if(e.pct>0&&e.from<=today&&today<=e.to&&(!live||e.pct>live.pct))live=e});
-  if(live)return {mode:"live",top:live.title,big:Math.max(live.pct,GLOBAL)+"%",sub:"הנחה על כל האתר"};
+  if(live)return {mode:"live",top:live.title,big:Math.max(live.pct,GLOBAL)+"%",sub:"הנחה על כל האתר",t:jlMid(live.to,1),lab:"נגמר בעוד"};
   if(GLOBAL>0)return {mode:"live",top:"מבצע",big:GLOBAL+"%",sub:"הנחה על כל האתר"};
   var soon=null,lim=new Date(Date.now()+7*864e5).toLocaleDateString("en-CA",{timeZone:"Asia/Jerusalem"});
   (EVENTS||[]).forEach(function(e){if(e.pct>0&&e.from>today&&e.from<=lim&&(!soon||e.from<soon.from))soon=e});
-  if(soon){var a=soon.from.split("-");return {mode:"soon",top:soon.title,big:(+a[2])+"."+(+a[1]),sub:soon.pct+"% הנחה על כל האתר"}}
+  if(soon){var a=soon.from.split("-");return {mode:"soon",top:soon.title,big:(+a[2])+"."+(+a[1]),sub:soon.pct+"% הנחה על כל האתר",t:jlMid(soon.from,0),lab:"מתחיל בעוד"}}
   return null;
 }
 function updateBanner(){
@@ -473,6 +489,7 @@ function updateBanner(){
   var inf=bfInfo();
   if(inf&&!inAdmin){
     $("bft").textContent=inf.top;$("bfp").textContent=inf.big;$("bfs").textContent=inf.sub;
+    if(inf.t){bfT=inf.t;bfLab=inf.lab;$("bfl").textContent=inf.lab;$("bfc").style.display="block";bfClock();if(!bfTick)bfTick=setInterval(bfClock,1000)}else{bfT=0;$("bfc").style.display="none"}
     b.style.display="block";setTimeout(function(){b.classList.add("on")},60)}
   else{b.classList.remove("on");b.style.display="none"}
 }
