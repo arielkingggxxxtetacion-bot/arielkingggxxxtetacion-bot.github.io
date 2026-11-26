@@ -137,6 +137,8 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
 @keyframes iSpark{0%{opacity:1;transform:rotate(var(--a)) translateX(0) scale(1)}100%{opacity:0;transform:rotate(var(--a)) translateX(var(--d)) scale(.2) rotate(180deg)}}
 #intro .iskip{position:absolute;top:16px;left:16px;font-size:14px;opacity:.5}
 @media (prefers-reduced-motion:reduce){#intro{display:none!important}}
+.chip.pend{background:#FFF3CD;color:#7A5B00;font-weight:700}
+.btn.ok{background:#1E9E5A;border-color:#1E9E5A;color:#fff}
 .soldBadge{position:absolute;top:8px;right:8px;background:#0F1B33;color:#fff;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px}
 .card.isSold .photo img{opacity:.55}
 .info{padding:12px 14px 14px}
@@ -795,7 +797,7 @@ function backfillThumbs(){
   (function next(){
     var p=todo.shift();
     if(!p){refreshAdmin(function(){aRender()});return}
-    rpc("get_product",{p_id:String(p.id)}).then(function(ph){
+    rpc("get_product",{p_id:String(p.id),p_code:CODE}).then(function(ph){
       if(!Array.isArray(ph)||!ph[0])return next();
       makeThumb(ph[0],function(t){
         if(!t)return next();
@@ -832,7 +834,7 @@ function coverHtml(){
   return '<div class="dpanel"><h2>סגנים מחליפים</h2>'+one("ziv","סגן זיו","אריאל")+one("guy","סגן גיא","עיליי")+'<p class="dnote" id="cvErr"></p></div>';
 }
 function deputyRender(){
-  $("aaddBtn").hidden=true;
+  $("aaddBtn").hidden=false;
   var tc=0,tp=0,tw=0;
   products.forEach(function(p){tc+=+p.cost||0;tp+=+p.price||0;tw+=+p.worth||0});
   $("astats").textContent=products.length?(products.length+" מוצרים. סה״כ עלות ₪"+tc+" · סה״כ מחיר מכירה ₪"+tp+" · סה״כ שווי אמיתי ₪"+tw):"";
@@ -841,7 +843,7 @@ function deputyRender(){
   $("alist").innerHTML=cv+products.map(function(p){
     var profit=(p.cost!=null&&p.cost!=="")?(+p.price-+p.cost):null;
     var img=p.photos&&p.photos[0]?'<img src="'+p.photos[0]+'" alt="">':"אין תמונה";
-    return '<div class="row"><div class="athumb">'+img+'</div><div class="rinfo"><b>'+esc(p.name)+'</b><span class="meta">מחיר מכירה: ₪'+esc(p.price)+'</span><span class="meta">עלה לנו: '+nf(p.cost)+'</span><span class="meta">איזה יד: '+esc(p.hand||"לא הוזן")+'</span><span class="meta">שווי אמיתי: '+nf(p.worth)+'</span>'+(profit!==null?'<span class="meta">רווח משוער: ₪'+profit+'</span>':'')+'<div><span class="chip'+(p.sold?' sold':'')+'">'+(p.sold?'נמכר':'זמין')+'</span></div></div></div>';
+    return '<div class="row"><div class="athumb">'+img+'</div><div class="rinfo"><b>'+esc(p.name)+'</b><span class="meta">מחיר מכירה: ₪'+esc(p.price)+'</span><span class="meta">עלה לנו: '+nf(p.cost)+'</span><span class="meta">איזה יד: '+esc(p.hand||"לא הוזן")+'</span><span class="meta">שווי אמיתי: '+nf(p.worth)+'</span>'+(profit!==null?'<span class="meta">רווח משוער: ₪'+profit+'</span>':'')+'<div><span class="chip'+(p.sold?' sold':'')+'">'+(p.sold?'נמכר':'זמין')+'</span>'+(p.status==='pending'?' <span class="chip pend">ממתין לאישור'+(p.by?' · '+esc(p.by):'')+'</span>':'')+'</div></div></div>';
   }).join("");
 }
 var subTimer=null;
@@ -862,13 +864,14 @@ function aRender(){
   if(ROLE==="sub"){subRender();return}
   if(ROLE==="deputy"){deputyRender();return}
   $("aaddBtn").hidden=false;
-  var avail=products.filter(function(p){return !p.sold}).length;
-  $("astats").textContent=products.length?(products.length+" מוצרים, "+avail+" זמינים"):"";
+  var avail=products.filter(function(p){return !p.sold&&p.status!=="pending"}).length;
+  var pc=products.filter(function(p){return p.status==="pending"}).length;
+  $("astats").textContent=(products.length?(products.length+" מוצרים, "+avail+" זמינים"):"")+(pc?" · "+pc+" ממתינים לאישור שלך":"");
   if(!products.length){$("alist").innerHTML='<div class="empty"><b>עדיין אין מוצרים</b>לחץ על "הוספת מוצר" כדי להעלות את הראשון.</div>';return}
   $("alist").innerHTML=products.map(function(p){
     var img=p.photos&&p.photos[0]?'<img src="'+p.photos[0]+'" alt="">':"אין תמונה";
     var del=ROLE==='deputy'?'':pendingDel===p.id?'<button type="button" class="btn danger small" data-act="del2" data-id="'+p.id+'">בטוח? מחק</button>':'<button type="button" class="btn danger small" data-act="del" data-id="'+p.id+'">מחיקה</button>';
-    return '<div class="row"><div class="athumb">'+img+'</div><div class="rinfo"><b>'+esc(p.name)+'</b><span class="meta"><span class="aprice">₪'+esc(p.price)+'</span>'+(effPct(p)>0?' <span class="chip">הנחה '+effPct(p)+'% ← ₪'+effPrice(p)+'</span>':'')+' · '+esc(p.cond)+' · '+esc(p.cat)+'</span><div><span class="chip'+(p.sold?' sold':'')+'">'+(p.sold?'נמכר':'זמין')+'</span></div></div><div class="racts"><button type="button" class="btn ghost small" data-act="edit" data-id="'+p.id+'">עריכה</button><button type="button" class="btn ghost small" data-act="sold" data-id="'+p.id+'">'+(p.sold?'סמן כזמין':'סמן כנמכר')+'</button>'+del+'</div></div>';
+    return '<div class="row"><div class="athumb">'+img+'</div><div class="rinfo"><b>'+esc(p.name)+'</b><span class="meta"><span class="aprice">₪'+esc(p.price)+'</span>'+(effPct(p)>0?' <span class="chip">הנחה '+effPct(p)+'% ← ₪'+effPrice(p)+'</span>':'')+' · '+esc(p.cond)+' · '+esc(p.cat)+'</span><div><span class="chip'+(p.sold?' sold':'')+'">'+(p.sold?'נמכר':'זמין')+'</span>'+(p.status==='pending'?' <span class="chip pend">ממתין לאישור'+(p.by?' · '+esc(p.by):'')+'</span>':'')+'</div></div><div class="racts">'+(p.status==='pending'?'<button type="button" class="btn ok small" data-act="approve" data-id="'+p.id+'">אישור והעלאה לאתר</button>':'')+'<button type="button" class="btn ghost small" data-act="edit" data-id="'+p.id+'">עריכה</button><button type="button" class="btn ghost small" data-act="sold" data-id="'+p.id+'">'+(p.sold?'סמן כזמין':'סמן כנמכר')+'</button>'+del+'</div></div>';
   }).join("");
 }
 function aPhotos(){
@@ -877,11 +880,12 @@ function aPhotos(){
   $("aphotos").innerHTML=h;
   $("apickBtn").hidden=photos.length>=4;
 }
+function toast(t){var e=$("egg");if(!e){e=document.createElement("div");e.id="egg";document.body.appendChild(e)}e.textContent=t;e.classList.add("on");clearTimeout(toast.t);toast.t=setTimeout(function(){e.classList.remove("on")},2800)}
 function openForm(id){
   var q=products.filter(function(x){return x.id===id})[0];
   if(q&&!q._full&&(q.nphotos||0)>(q.photos?q.photos.length:0)){
     $("aferr").textContent="";
-    rpc("get_product",{p_id:String(id)}).then(function(ph){
+    rpc("get_product",{p_id:String(id),p_code:CODE}).then(function(ph){
       if(Array.isArray(ph)&&ph.length){q.photos=ph;q._full=true}
       if(!q._full){alert_("לא הצלחנו לטעון את התמונות. נסה שוב.");return}
       openForm2(id);
@@ -895,7 +899,8 @@ function openForm2(id){
   if(!id){rpc("set_adding",{p_code:CODE,p_on:true}).catch(function(){})}
   editId=id||null;
   var p=products.filter(function(x){return x.id===id})[0];
-  $("aftitle").textContent=p?"עריכת מוצר":"מוצר חדש";
+  $("aftitle").textContent=p?"עריכת מוצר":(ROLE==="deputy"?"מוצר חדש לאישור מנהל":"מוצר חדש");
+  $("asaveBtn").textContent=ROLE==="deputy"?"שליחה לאישור":"שמירה";
   $("afname").value=p?p.name:"";
   $("afprice").value=p?p.price:"";
   $("afcond").value=p?p.cond:"במצב טוב";
@@ -1183,9 +1188,12 @@ $("asaveBtn").addEventListener("click",function(){
   var rec={name:name,price:+price,cond:$("afcond").value,cat:$("afcat").value,desc:$("afdesc").value.trim(),photos:photos.slice(),cost:$("afcost").value===""?null:+$("afcost").value,worth:$("afworth").value===""?null:+$("afworth").value,hand:$("afhand").value};
   var btn=$("asaveBtn");btn.disabled=true;$("aferr").textContent="שומר...";
   function doSave(th){
-    rpc("admin_save",{p_code:CODE,p_id:editId||null,p_name:rec.name,p_price:rec.price,p_cond:rec.cond,p_cat:rec.cat,p_desc:rec.desc,p_photos:rec.photos,p_cost:rec.cost,p_worth:rec.worth,p_hand:rec.hand,p_thumb:th}).then(function(j){
+    var fnName=ROLE==="deputy"?"deputy_submit":"admin_save";
+    var args={p_code:CODE,p_id:editId||null,p_name:rec.name,p_price:rec.price,p_cond:rec.cond,p_cat:rec.cat,p_desc:rec.desc,p_photos:rec.photos,p_cost:rec.cost,p_worth:rec.worth,p_hand:rec.hand,p_thumb:th};
+    if(ROLE==="deputy")delete args.p_id;
+    rpc(fnName,args).then(function(j){
       btn.disabled=false;
-      if(j&&j.items){products=j.items;$("aferr").textContent="";$("aformView").hidden=true;aList()}
+      if(j&&j.items){products=j.items;$("aferr").textContent="";$("aformView").hidden=true;aList();if(ROLE==="deputy")toast("המוצר נשלח לאישור מנהל")}
       else{$("aferr").textContent=errText(j&&j.error)}
     }).catch(function(){btn.disabled=false;$("aferr").textContent="השמירה נכשלה. בדוק חיבור או נסה פחות תמונות."});
   }
@@ -1196,6 +1204,7 @@ $("alist").addEventListener("click",function(e){
   if(!b)return;
   var id=b.dataset.id,act=b.dataset.act;
   if(act==="edit"){openForm(id);return}
+  if(act==="approve"){rpc("admin_approve",{p_code:CODE,p_id:id}).then(function(j){if(j&&j.items){products=j.items;aRender();toast("המוצר אושר ועלה לאתר")}}).catch(function(){});return}
   if(act==="sold"){rpc("admin_toggle_sold",{p_code:CODE,p_id:id}).then(function(j){if(j&&j.items){products=j.items;aRender()}}).catch(function(){});return}
   if(act==="del"){pendingDel=id;aRender();return}
   if(act==="del2"){pendingDel=null;rpc("admin_delete",{p_code:CODE,p_id:id}).then(function(j){if(j&&j.items){products=j.items;aRender()}}).catch(function(){})}
