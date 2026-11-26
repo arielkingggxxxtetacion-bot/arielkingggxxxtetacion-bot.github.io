@@ -283,7 +283,7 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
 <body>
 
 
-<div id="intro" aria-hidden="true"><div class="iglow"></div><div class="ilogo"><svg viewBox="0 0 160 160" aria-hidden="true"><rect width="160" height="160" rx="36" fill="#1F5FD6"/><g transform="translate(20 20) scale(5)"><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 8H21L18.9 15.6Q18.6 16.5 17.5 16.5H9.8Q8.9 16.5 8.6 15.5Z" fill="#FFFFFF"/><g stroke="#1F5FD6" stroke-width="1.3" stroke-linecap="round"><line x1="10.5" y1="10.2" x2="10.5" y2="14.3"/><line x1="13.5" y1="10.2" x2="13.5" y2="14.3"/><line x1="16.5" y1="10.2" x2="16.5" y2="14.3"/></g><circle cx="9" cy="20" r="2" fill="#FFFFFF"/><circle cx="18" cy="20" r="2" fill="#FFFFFF"/></g></svg></div><div class="iname" id="iname"><span style="--i:0">M</span><span style="--i:1">a</span><span style="--i:2">r</span><span style="--i:3">k</span><span style="--i:4">e</span><span style="--i:5">t</span><span style="--i:6">l</span><span style="--i:7">y</span></div><div class="itag">חלום שמתגשם</div><i class="ispark" style="--a:0deg;--d:110px"></i><i class="ispark" style="--a:30deg;--d:140px"></i><i class="ispark" style="--a:60deg;--d:170px"></i><i class="ispark" style="--a:90deg;--d:110px"></i><i class="ispark" style="--a:120deg;--d:140px"></i><i class="ispark" style="--a:150deg;--d:170px"></i><i class="ispark" style="--a:180deg;--d:110px"></i><i class="ispark" style="--a:210deg;--d:140px"></i><i class="ispark" style="--a:240deg;--d:170px"></i><i class="ispark" style="--a:270deg;--d:110px"></i><i class="ispark" style="--a:300deg;--d:140px"></i><i class="ispark" style="--a:330deg;--d:170px"></i><div class="iprompt">לחצו כדי להתחיל</div></div>
+<div id="intro" aria-hidden="true"><div class="iglow"></div><div class="ilogo"><svg viewBox="0 0 160 160" aria-hidden="true"><rect width="160" height="160" rx="36" fill="#1F5FD6"/><g transform="translate(20 20) scale(5)"><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 8H21L18.9 15.6Q18.6 16.5 17.5 16.5H9.8Q8.9 16.5 8.6 15.5Z" fill="#FFFFFF"/><g stroke="#1F5FD6" stroke-width="1.3" stroke-linecap="round"><line x1="10.5" y1="10.2" x2="10.5" y2="14.3"/><line x1="13.5" y1="10.2" x2="13.5" y2="14.3"/><line x1="16.5" y1="10.2" x2="16.5" y2="14.3"/></g><circle cx="9" cy="20" r="2" fill="#FFFFFF"/><circle cx="18" cy="20" r="2" fill="#FFFFFF"/></g></svg></div><div class="iname" id="iname"><span style="--i:0">M</span><span style="--i:1">a</span><span style="--i:2">r</span><span style="--i:3">k</span><span style="--i:4">e</span><span style="--i:5">t</span><span style="--i:6">l</span><span style="--i:7">y</span></div><div class="itag">חלום שמתגשם</div><i class="ispark" style="--a:0deg;--d:110px"></i><i class="ispark" style="--a:30deg;--d:140px"></i><i class="ispark" style="--a:60deg;--d:170px"></i><i class="ispark" style="--a:90deg;--d:110px"></i><i class="ispark" style="--a:120deg;--d:140px"></i><i class="ispark" style="--a:150deg;--d:170px"></i><i class="ispark" style="--a:180deg;--d:110px"></i><i class="ispark" style="--a:210deg;--d:140px"></i><i class="ispark" style="--a:240deg;--d:170px"></i><i class="ispark" style="--a:270deg;--d:110px"></i><i class="ispark" style="--a:300deg;--d:140px"></i><i class="ispark" style="--a:330deg;--d:170px"></i></div>
 <button type="button" id="sndBtn" aria-label="צלילים">&#128266;</button>
 <div id="lb" aria-hidden="true"><button type="button" class="lbx" id="lbClose" aria-label="סגירה">&#10005;</button><button type="button" class="lbn" id="lbPrev" aria-label="הקודם">&#8250;</button><button type="button" class="lbn r" id="lbNext" aria-label="הבא">&#8249;</button><div class="lbs" id="lbScroll"><img id="lbImg" alt=""></div><div class="lbc" id="lbCount"></div></div>
 <div id="share" aria-hidden="true">
@@ -710,10 +710,11 @@ function openProduct(i){
 
 /* ---------- sound effects (WebAudio, no files) ---------- */
 var SND_ON=true;try{SND_ON=localStorage.getItem("mk_snd")!=="0"}catch(e){}
-var AC=null;
+var AC=null,TOUCHED=false;
+["pointerdown","touchstart","click","keydown"].forEach(function(ev){document.addEventListener(ev,function(){TOUCHED=true},{capture:true,passive:true})});
 function ac(){try{if(!AC){var C=window.AudioContext||window.webkitAudioContext;if(C)AC=new C()}if(AC&&AC.state==="suspended")AC.resume()}catch(e){}return AC}
 function tone(f,d,type,vol,to,at){
-  var a=ac();if(!a||!SND_ON)return;
+  var a=ac();if(!a||!SND_ON||!TOUCHED||a.state!=="running")return;
   var t=a.currentTime+(at||0),o=a.createOscillator(),g=a.createGain();
   o.type=type||"sine";o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+d);
   g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(vol||0.07,t+0.012);g.gain.exponentialRampToValueAtTime(0.0001,t+d);
@@ -1140,9 +1141,8 @@ $("mailBtn").addEventListener("click",confetti);
     tone(300,.25,"sine",.05,900);
     el.classList.add("out");setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el)},800);
   }
-  el.addEventListener("click",function(){
-    if(started){finish();return}
-    started=true;ac();
+  function start(){
+    if(started)return;started=true;ac();
     el.classList.add("go");
     tone(110,.55,"sawtooth",.04,900);
     at(650,function(){el.classList.add("boom");tone(95,.5,"sine",.2,38);tone(190,.2,"triangle",.08,70)});
@@ -1152,7 +1152,9 @@ $("mailBtn").addEventListener("click",confetti);
     });
     at(1950,function(){el.classList.add("tag");[784,988,1175,1568].forEach(function(f,i){tone(f,.35,"triangle",.07,null,i*.09)})});
     at(3300,finish);
-  });
+  }
+  el.addEventListener("click",function(){ac();if(!started)start();else finish()});
+  start();
 })();
 $("sndBtn").addEventListener("click",function(){SND_ON=!SND_ON;try{localStorage.setItem("mk_snd",SND_ON?"1":"0")}catch(e){}syncSnd();if(SND_ON)sfx("pop")});
 syncSnd();
