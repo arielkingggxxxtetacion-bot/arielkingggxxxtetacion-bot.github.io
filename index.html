@@ -638,6 +638,7 @@ function heartHtml(x){var on=liked(x.id);return '<button type="button" class="he
 function isNew(x){var t=+x.id;return t>1e12&&Date.now()-t<3*864e5}
 function shopItems(){
   return products.filter(function(x){
+    if(x.status==="pending")return false;
     if(SCAT&&x.cat!==SCAT)return false;
     if(SLIKE&&!liked(x.id))return false;
     if(SAV&&x.sold)return false;
@@ -647,9 +648,9 @@ function shopItems(){
 }
 function fbarRender(){
   var f=$("fbar");if(!f)return;
-  f.hidden=products.length<2;
+  f.hidden=products.filter(function(x){return x.status!=="pending"}).length<2;
   if(f.hidden)return;
-  var cats=[];products.forEach(function(x){if(x.cat&&cats.indexOf(x.cat)<0)cats.push(x.cat)});
+  var cats=[];products.forEach(function(x){if(x.status!=="pending"&&x.cat&&cats.indexOf(x.cat)<0)cats.push(x.cat)});
   $("fchips").innerHTML=['הכל'].concat(cats).map(function(c){var on=(c==="הכל"&&!SCAT)||c===SCAT;return '<button type="button" class="'+(on?'on':'')+'" data-cat="'+esc(c==="הכל"?"":c)+'">'+esc(c)+'</button>'}).join("")+'<button type="button" class="'+(SLIKE?'on':'')+'" data-flt="like">\u2665 אהבתי'+(LIKES.length?' ('+LIKES.length+')':'')+'</button><button type="button" class="'+(SAV?'on':'')+'" data-flt="av">זמינים בלבד</button>';
 }
 
