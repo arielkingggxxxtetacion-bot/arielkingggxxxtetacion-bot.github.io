@@ -111,6 +111,32 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
 .card:active,.btn:active,.enter:active{transform:scale(.97)}
 #sndBtn{position:fixed;right:12px;bottom:12px;z-index:70;width:40px;height:40px;border:0;border-radius:50%;background:rgba(15,27,51,.78);color:#fff;font-size:18px;line-height:1;padding:0;display:flex;align-items:center;justify-content:center}
 @media (prefers-reduced-motion:reduce){.vin,.grid.anim .card{animation:none!important}}
+
+#intro{position:fixed;inset:0;z-index:100000;background:radial-gradient(ellipse at 50% 40%,#16307A 0%,#0A1230 70%);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;overflow:hidden;touch-action:manipulation}
+#intro.out{animation:iOut .7s cubic-bezier(.7,0,.3,1) forwards}
+@keyframes iOut{to{transform:translateY(-105%)}}
+#intro .iglow{position:absolute;left:50%;top:40%;width:120vmin;height:120vmin;margin:-60vmin 0 0 -60vmin;border-radius:50%;background:radial-gradient(circle,rgba(70,130,255,.55) 0%,rgba(70,130,255,0) 62%);transform:scale(0);opacity:0}
+#intro.go .iglow{animation:iGlow 1.1s ease-out .05s forwards}
+@keyframes iGlow{to{transform:scale(1);opacity:1}}
+#intro .ilogo{position:relative;width:130px;height:130px;transform:scale(0);opacity:0;filter:drop-shadow(0 12px 34px rgba(31,95,214,.7))}
+#intro .ilogo svg{width:100%;height:100%;display:block}
+#intro.go .ilogo{animation:iLogo .75s cubic-bezier(.2,1.2,.3,1) .3s forwards}
+@keyframes iLogo{0%{transform:scale(0) rotate(-220deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+#intro .iname{position:relative;margin-top:22px;font-size:46px;font-weight:800;letter-spacing:2px;direction:ltr;display:flex;gap:1px;min-height:60px}
+#intro .iname span{display:inline-block;opacity:0;transform:translateY(40px) scale(.6);filter:blur(10px)}
+#intro.names .iname span{animation:iLet .45s cubic-bezier(.2,.9,.3,1.2) forwards;animation-delay:calc(var(--i)*90ms)}
+@keyframes iLet{to{opacity:1;transform:none;filter:blur(0)}}
+#intro .itag{margin-top:10px;font-size:20px;font-weight:700;color:#FFD54A;opacity:0;transform:translateY(10px)}
+#intro.tag .itag{animation:iTag .6s ease-out forwards}
+@keyframes iTag{to{opacity:1;transform:none}}
+#intro .iprompt{position:absolute;bottom:14%;left:0;right:0;text-align:center;font-size:18px;font-weight:700;opacity:.9;animation:iPulse 1.4s ease-in-out infinite}
+#intro.go .iprompt{display:none}
+@keyframes iPulse{50%{opacity:.35;transform:scale(.97)}}
+#intro .ispark{position:absolute;left:50%;top:calc(40% - 40px);width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:2px;background:#FFD54A;opacity:0}
+#intro.boom .ispark{animation:iSpark .9s ease-out forwards}
+@keyframes iSpark{0%{opacity:1;transform:rotate(var(--a)) translateX(0) scale(1)}100%{opacity:0;transform:rotate(var(--a)) translateX(var(--d)) scale(.2) rotate(180deg)}}
+#intro .iskip{position:absolute;top:16px;left:16px;font-size:14px;opacity:.5}
+@media (prefers-reduced-motion:reduce){#intro{display:none!important}}
 .soldBadge{position:absolute;top:8px;right:8px;background:#0F1B33;color:#fff;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px}
 .card.isSold .photo img{opacity:.55}
 .info{padding:12px 14px 14px}
@@ -257,6 +283,7 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
 <body>
 
 
+<div id="intro" aria-hidden="true"><div class="iglow"></div><div class="ilogo"><svg viewBox="0 0 160 160" aria-hidden="true"><rect width="160" height="160" rx="36" fill="#1F5FD6"/><g transform="translate(20 20) scale(5)"><path d="M2 3h3l2.6 12.4a2 2 0 0 0 2 1.6h7.7a2 2 0 0 0 2-1.5L21 8H6" fill="none" stroke="#FFFFFF" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 8H21L18.9 15.6Q18.6 16.5 17.5 16.5H9.8Q8.9 16.5 8.6 15.5Z" fill="#FFFFFF"/><g stroke="#1F5FD6" stroke-width="1.3" stroke-linecap="round"><line x1="10.5" y1="10.2" x2="10.5" y2="14.3"/><line x1="13.5" y1="10.2" x2="13.5" y2="14.3"/><line x1="16.5" y1="10.2" x2="16.5" y2="14.3"/></g><circle cx="9" cy="20" r="2" fill="#FFFFFF"/><circle cx="18" cy="20" r="2" fill="#FFFFFF"/></g></svg></div><div class="iname" id="iname"><span style="--i:0">M</span><span style="--i:1">a</span><span style="--i:2">r</span><span style="--i:3">k</span><span style="--i:4">e</span><span style="--i:5">t</span><span style="--i:6">l</span><span style="--i:7">y</span></div><div class="itag">חלום שמתגשם</div><i class="ispark" style="--a:0deg;--d:110px"></i><i class="ispark" style="--a:30deg;--d:140px"></i><i class="ispark" style="--a:60deg;--d:170px"></i><i class="ispark" style="--a:90deg;--d:110px"></i><i class="ispark" style="--a:120deg;--d:140px"></i><i class="ispark" style="--a:150deg;--d:170px"></i><i class="ispark" style="--a:180deg;--d:110px"></i><i class="ispark" style="--a:210deg;--d:140px"></i><i class="ispark" style="--a:240deg;--d:170px"></i><i class="ispark" style="--a:270deg;--d:110px"></i><i class="ispark" style="--a:300deg;--d:140px"></i><i class="ispark" style="--a:330deg;--d:170px"></i><div class="iprompt">לחצו כדי להתחיל</div></div>
 <button type="button" id="sndBtn" aria-label="צלילים">&#128266;</button>
 <div id="lb" aria-hidden="true"><button type="button" class="lbx" id="lbClose" aria-label="סגירה">&#10005;</button><button type="button" class="lbn" id="lbPrev" aria-label="הקודם">&#8250;</button><button type="button" class="lbn r" id="lbNext" aria-label="הבא">&#8249;</button><div class="lbs" id="lbScroll"><img id="lbImg" alt=""></div><div class="lbc" id="lbCount"></div></div>
 <div id="share" aria-hidden="true">
@@ -1099,6 +1126,34 @@ $("mailBtn").addEventListener("click",confetti);
 
 /* page itself must not zoom; only product photos zoom (lightbox) */
 ["gesturestart","gesturechange","gestureend"].forEach(function(ev){document.addEventListener(ev,function(e){e.preventDefault()},{passive:false})});
+
+/* ---------- game-style intro ---------- */
+(function(){
+  var el=$("intro");if(!el)return;
+  var skip=false;try{skip=sessionStorage.getItem("mk_intro")==="1"||/[?&]nointro\b/.test(location.search)||window.matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){}
+  if(skip){el.parentNode.removeChild(el);return}
+  var T=[],started=false,done=false;
+  function at(ms,fn){T.push(setTimeout(fn,ms))}
+  function finish(){
+    if(done)return;done=true;T.forEach(clearTimeout);
+    try{sessionStorage.setItem("mk_intro","1")}catch(e){}
+    tone(300,.25,"sine",.05,900);
+    el.classList.add("out");setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el)},800);
+  }
+  el.addEventListener("click",function(){
+    if(started){finish();return}
+    started=true;ac();
+    el.classList.add("go");
+    tone(110,.55,"sawtooth",.04,900);
+    at(650,function(){el.classList.add("boom");tone(95,.5,"sine",.2,38);tone(190,.2,"triangle",.08,70)});
+    at(1100,function(){
+      el.classList.add("names");
+      for(var i=0;i<8;i++)(function(i){at(i*90,function(){tone(480+i*75,.07,"square",.03)})})(i);
+    });
+    at(1950,function(){el.classList.add("tag");[784,988,1175,1568].forEach(function(f,i){tone(f,.35,"triangle",.07,null,i*.09)})});
+    at(3300,finish);
+  });
+})();
 $("sndBtn").addEventListener("click",function(){SND_ON=!SND_ON;try{localStorage.setItem("mk_snd",SND_ON?"1":"0")}catch(e){}syncSnd();if(SND_ON)sfx("pop")});
 syncSnd();
 $("alogout").addEventListener("click",function(){try{sessionStorage.removeItem("mk_admin")}catch(e){}show("shop")});
