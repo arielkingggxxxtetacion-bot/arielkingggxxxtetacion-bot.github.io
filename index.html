@@ -189,6 +189,23 @@ body.bfm .backFloat{top:44px;background:#111;color:#FFD54A;border-color:#FFD54A}
 body.bfm .aboutTop span,body.bfm .dream{color:#FFD54A}
 body.bfm .aboutText .story{color:#fff}
 body.bfm .aboutTop{padding-top:210px}
+
+#checkout a.btn,#checkout .ckItem{box-sizing:border-box;max-width:100%}
+.bfpbar{display:none}
+body.bfm .bfpbar{display:flex;align-items:center;justify-content:center;gap:8px;margin:0 0 16px}
+.bfbar2{flex:1;min-width:0;overflow:hidden;background:#FF3B30;color:#fff;text-align:center;font-weight:900;font-size:10px;padding:9px 2px;direction:ltr;border-top:2px solid #FFD54A;border-bottom:2px solid #FFD54A;white-space:nowrap;text-overflow:clip;transform:rotate(-2deg)}
+.bfstk.inl{position:static;display:none;width:58px;height:58px;font-size:15px;flex:0 0 58px;transform:none}
+body.bfm .bfstk.inl{display:flex}
+.bfstk.inl.y{background:#FFD54A;color:#111;border-color:#111}
+.mainwrap{position:relative}
+.bfstk.bfimg{top:10px;right:10px;left:auto;width:84px;height:84px;font-size:24px;z-index:2}
+body.bfm #product .pprice{color:#FFD54A}
+body.bfm #product,body.bfm #checkout{color:#fff}
+body.bfm .tag{background:#2a2a2a;color:#FFD54A}
+body.bfm .spec,body.bfm .spec div{border-color:#333}
+body.bfm .spec span:first-child{color:#aaa}
+body.bfm .ckItem{background:#151515;border-color:#FFD54A55;color:#fff}
+body.bfm .note,body.bfm .hint,body.bfm .desc{color:#ddd}
 .chip.pend{background:#FFF3CD;color:#7A5B00;font-weight:700}
 .btn.ok{background:#1E9E5A;border-color:#1E9E5A;color:#fff}
 .soldBadge{position:absolute;top:8px;right:8px;background:#0F1B33;color:#fff;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px}
@@ -459,9 +476,10 @@ body.bfm .aboutTop{padding-top:210px}
     <button type="button" class="backBtn" id="backProd">חזרה לחנות</button>
   </header>
   <main class="pwrap">
+    <div class="bfpbar" aria-hidden="true"><b class="bfstk inl"><small>BLACK</small><span class="bflpp">-50%</span></b><div class="bfbar2">BLACK FRIDAY ★ <span class="bflp">50</span>% OFF ★ ALL SITE</div><b class="bfstk inl y"><small>FRIDAY</small><span>SALE</span></b></div>
     <div class="pgrid">
       <div class="gal">
-        <div class="mainimg" id="mainimg" role="img" aria-label="תמונת המוצר"></div>
+        <div class="mainwrap"><div class="mainimg" id="mainimg" role="img" aria-label="תמונת המוצר"></div><b class="bfstk bfimg"><small>BLACK</small><span class="bflpp">-50%</span></b></div>
         <div class="thumbs" id="thumbs"></div>
         <div class="angle" id="angle"></div>
       </div>
@@ -489,6 +507,7 @@ body.bfm .aboutTop{padding-top:210px}
     <button type="button" class="backBtn" id="backCheck">חזרה למוצר</button>
   </header>
   <main class="pwrap" style="max-width:560px">
+    <div class="bfpbar" aria-hidden="true"><b class="bfstk inl"><small>BLACK</small><span class="bflpp">-50%</span></b><div class="bfbar2">BLACK FRIDAY ★ <span class="bflp">50</span>% OFF ★ ALL SITE</div><b class="bfstk inl y"><small>FRIDAY</small><span>SALE</span></b></div>
     <h1 style="font-size:26px;margin:0 0 14px">הזמנה</h1>
     <div class="ckItem" id="ckItem"></div>
     <div class="ckItem" style="font-size:15px;color:#143F94;background:#E8F0FE;border-color:#E8F0FE">משלוח עד הבית בלבד. התשלום במקום, במזומן או בביט.</div>
@@ -615,7 +634,7 @@ var SAMPLES=[
 
 /* ---------- מסד נתונים (Supabase) ---------- */
 var SUPA_URL="https://pptnlrrbkepdlryyewfn.supabase.co",SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdG5scnJia2VwZGxyeXlld2ZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2MDA4MjUsImV4cCI6MjExMTE3NjgyNX0.7CGRTALdDS-m4UElksIYFBi8EDtWe1ya5__D9-ma6Mk";
-var BUILD="b62";
+var BUILD="b64";
 (function(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/var BUILD="([^"]+)"/);if(m&&m[1]!==BUILD&&sessionStorage.getItem("mk_rl")!==m[1]){sessionStorage.setItem("mk_rl",m[1]);location.reload()}}).catch(function(){})}catch(e){}})();
 var products=[],loaded=false,loadErr=false,loadTry=0,CODE="",ROLE_="";
 function rpc(fn,args){
