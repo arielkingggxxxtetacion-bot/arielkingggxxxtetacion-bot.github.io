@@ -440,7 +440,7 @@ body.bfm .note,body.bfm .hint,body.bfm .desc{color:#ddd}
   <main class="wrap">
     <div class="fbar" id="fbar" hidden><input id="fq" type="search" placeholder="חיפוש מוצר" autocomplete="off"><div class="chips" id="fchips"></div></div>
     <div class="grid" id="grid"></div>
-    <p class="note" id="shopNote">המוצרים והמחירים כאן הם דוגמה בלבד, עד שנעלה את המוצרים האמיתיים.</p>
+    <p class="note" id="shopNote" hidden></p>
     <button type="button" class="calLink" id="toCal">לוח הנחות שנתי</button>
   </main>
 </div>
@@ -499,7 +499,7 @@ body.bfm .note,body.bfm .hint,body.bfm .desc{color:#ddd}
           <div><span>משלוח</span><span>עד הבית, המחיר והזמן מתואמים איתך</span></div>
           <div><span>תשלום</span><span>במקום, במזומן או בביט</span></div>
         </div>
-        <p class="note" id="pnote" style="text-align:start">התמונות והתיאור כאן לדוגמה, עד שנעלה את המוצר האמיתי.</p>
+        <p class="note" id="pnote" style="text-align:start" hidden></p>
       </div>
     </div>
   </main>
@@ -637,7 +637,7 @@ var SAMPLES=[
 
 /* ---------- מסד נתונים (Supabase) ---------- */
 var SUPA_URL="https://pptnlrrbkepdlryyewfn.supabase.co",SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdG5scnJia2VwZGxyeXlld2ZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2MDA4MjUsImV4cCI6MjExMTE3NjgyNX0.7CGRTALdDS-m4UElksIYFBi8EDtWe1ya5__D9-ma6Mk";
-var BUILD="b66";
+var BUILD="b67";
 (function(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/var BUILD="([^"]+)"/);if(m&&m[1]!==BUILD&&sessionStorage.getItem("mk_rl")!==m[1]){sessionStorage.setItem("mk_rl",m[1]);location.reload()}}).catch(function(){})}catch(e){}})();
 var products=[],loaded=false,loadErr=false,loadTry=0,CODE="",ROLE_="";
 function rpc(fn,args){
@@ -777,7 +777,7 @@ function openProduct(i){
   $("scond").textContent=it.cond;
   $("scat").textContent=it.cat||"";
   $("pdesc").textContent=it.desc||"אין תיאור למוצר זה.";
-  $("pnote").hidden=!it.sample;
+  $("pnote").hidden=true;
   $("orderBtn").hidden=!!it.sold;
   renderThumbs(it,p);
   curAngle=0;setAngle(0);
