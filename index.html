@@ -547,7 +547,7 @@ body.bfm .note,body.bfm .hint,body.bfm .desc{color:#ddd}
     <main class="awrap" id="alistView">
       <div class="ahead"><h1>המוצרים שלי</h1><button type="button" class="btn" id="aaddBtn">הוספת מוצר</button></div>
       <div class="dbar" id="dbar" hidden><button type="button" class="btn ghost small" id="gdBtn">הנחה לכל החנות</button><button type="button" class="btn ghost small" id="pdBtn">הנחות למוצרים</button><button type="button" class="btn ghost small" id="acBtn">לוח הנחות</button><button type="button" class="btn ghost small" id="skBtn">חולה</button></div>
-      <div class="dpanel" id="skPanel" hidden><h2>סימון חולה</h2><p class="dnote">בחר מי חולה ומתאריך עד תאריך. בימים האלה הסגן שלו נכנס במקומו עם כל האפשרויות של מנהל. אפשר לבטל בכל רגע.</p><div class="dline"><select id="skWho" style="min-height:48px;border:1.5px solid #DCE3F0;border-radius:10px;padding:0 10px;font-size:16px"><option value="admin">אריאל (סגן זיו)</option><option value="admin2">עיליי (סגן גיא)</option></select></div><div class="dline" style="margin-top:8px"><input id="skFrom" type="date"><span>עד</span><input id="skTo" type="date"><button type="button" class="btn small" id="skSave">סימון</button></div><div id="skList"></div><p class="dnote" id="skErr"></p></div>
+      <div class="dpanel" id="skPanel" hidden><h2>סימון חולה</h2><p class="dnote">בחר מי חולה ומתאריך עד תאריך. בימים האלה הסגן שלו נכנס במקומו עם כל האפשרויות של מנהל. אפשר לבטל בכל רגע.</p><div class="dline"><select id="skWho" style="min-height:48px;border:1.5px solid #DCE3F0;border-radius:10px;padding:0 10px;font-size:16px"><option value="admin">מנהל 1 (סגן זיו)</option><option value="admin2">מנהל 2 (סגן גיא)</option></select></div><div class="dline" style="margin-top:8px"><input id="skFrom" type="date"><span>עד</span><input id="skTo" type="date"><button type="button" class="btn small" id="skSave">סימון</button></div><div id="skList"></div><p class="dnote" id="skErr"></p></div>
       <div class="dpanel" id="gdPanel" hidden>
         <h2>הנחה לכל החנות</h2>
         <div class="dline"><input id="gdPct" type="number" inputmode="numeric" min="0" max="90" placeholder="%"><span>אחוז הנחה</span><button type="button" class="btn small" id="gdSave">שמירה</button><button type="button" class="btn danger small" id="gdOff">כיבוי</button></div>
@@ -637,7 +637,7 @@ var SAMPLES=[
 
 /* ---------- מסד נתונים (Supabase) ---------- */
 var SUPA_URL="https://pptnlrrbkepdlryyewfn.supabase.co",SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdG5scnJia2VwZGxyeXlld2ZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2MDA4MjUsImV4cCI6MjExMTE3NjgyNX0.7CGRTALdDS-m4UElksIYFBi8EDtWe1ya5__D9-ma6Mk";
-var BUILD="b67";
+var BUILD="b68";
 (function(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/var BUILD="([^"]+)"/);if(m&&m[1]!==BUILD&&sessionStorage.getItem("mk_rl")!==m[1]){sessionStorage.setItem("mk_rl",m[1]);location.reload()}}).catch(function(){})}catch(e){}})();
 var products=[],loaded=false,loadErr=false,loadTry=0,CODE="",ROLE_="";
 function rpc(fn,args){
@@ -914,7 +914,7 @@ function coverHtml(){
     return '<div class="sk"><div><b>'+name+'</b><small>'+(u?boss+' חולה עד '+dd(u):boss+' לא מסומן חולה')+'</small></div>'+
       (u?(open?'<input type="password" inputmode="numeric" id="cvCode" placeholder="קוד אישי" autocomplete="off"><button type="button" class="btn small" data-cvgo="'+k+'">כניסה</button>':'<button type="button" class="btn small" data-cv="'+k+'">כניסה כמחליף</button>'):'')+'</div>';
   }
-  return '<div class="dpanel"><h2>סגנים מחליפים</h2>'+one("ziv","סגן זיו","אריאל")+one("guy","סגן גיא","עיליי")+'<p class="dnote" id="cvErr"></p></div>';
+  return '<div class="dpanel"><h2>סגנים מחליפים</h2>'+one("ziv","סגן זיו","מנהל 1")+one("guy","סגן גיא","מנהל 2")+'<p class="dnote" id="cvErr"></p></div>';
 }
 function deputyRender(){
   $("aaddBtn").hidden=false;
@@ -1051,7 +1051,7 @@ $("alist").addEventListener("click",function(e){
   }).catch(function(){$("cvErr").textContent="אין חיבור לשרת. נסה שוב."});
 });
 function skRender(items){
-  $("skList").innerHTML=(items&&items.length)?items.map(function(x){return '<div class="sk"><div><b>'+(x.who==="admin2"?"עיליי":"אריאל")+' חולה: '+esc(dd(x.from))+(x.to!==x.from?' עד '+esc(dd(x.to)):'')+'</b></div><button type="button" class="btn danger small" data-skdel="'+esc(x.id)+'">ביטול</button></div>'}).join("")+'<button type="button" class="btn ghost small" data-skdel="all" style="margin-top:8px">ביטול הכל של הנבחר למעלה</button>':'<div class="dnote">אין ימי מחלה מסומנים.</div>';
+  $("skList").innerHTML=(items&&items.length)?items.map(function(x){return '<div class="sk"><div><b>'+(x.who==="admin2"?"מנהל 2":"מנהל 1")+' חולה: '+esc(dd(x.from))+(x.to!==x.from?' עד '+esc(dd(x.to)):'')+'</b></div><button type="button" class="btn danger small" data-skdel="'+esc(x.id)+'">ביטול</button></div>'}).join("")+'<button type="button" class="btn ghost small" data-skdel="all" style="margin-top:8px">ביטול הכל של הנבחר למעלה</button>':'<div class="dnote">אין ימי מחלה מסומנים.</div>';
 }
 function skLoad(){rpc("sick_get",{p_code:CODE}).then(function(j){if(j&&j.items){skRender(j.items);$("skErr").textContent=""}else $("skErr").textContent=errText(j&&j.error)}).catch(function(){})}
 $("skBtn").addEventListener("click",function(){var h=!$("skPanel").hidden;$("skPanel").hidden=h;if(!h){$("gdPanel").hidden=true;skLoad()}});
