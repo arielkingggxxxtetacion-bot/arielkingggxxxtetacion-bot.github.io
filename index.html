@@ -137,6 +137,29 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
 @keyframes iSpark{0%{opacity:1;transform:rotate(var(--a)) translateX(0) scale(1)}100%{opacity:0;transform:rotate(var(--a)) translateX(var(--d)) scale(.2) rotate(180deg)}}
 #intro .iskip{position:absolute;top:16px;left:16px;font-size:14px;opacity:.5}
 @media (prefers-reduced-motion:reduce){#intro{display:none!important}}
+
+body.bfm,body.bfm html{background:#0A0A0A}
+body.bfm #shop,body.bfm #product,body.bfm #about,body.bfm #checkout{background:#0A0A0A repeating-linear-gradient(-45deg,rgba(255,213,74,.05) 0 22px,transparent 22px 44px);color:#fff;min-height:100vh}
+body.bfm .shopbar{background:#111;border-bottom:2px solid #FFD54A}
+body.bfm .backBtn{background:#111;color:#FFD54A;border-color:#FFD54A}
+body.bfm .band{background:linear-gradient(135deg,#000,#2a0a0a 60%,#000);border-bottom:3px solid #FFD54A;position:relative;overflow:hidden}
+body.bfm .band h1{color:#FFD54A;text-shadow:0 0 18px rgba(255,213,74,.5)}
+body.bfm .card{background:#151515;border-color:#FFD54A55;color:#fff;box-shadow:0 0 0 1px #FFD54A22,0 6px 18px rgba(255,59,48,.18)}
+body.bfm .fbar input{background:#151515;color:#fff;border-color:#FFD54A55}
+body.bfm .chips button{background:#151515;color:#FFD54A;border-color:#FFD54A66}
+body.bfm .chips button.on{background:#FFD54A;color:#111;border-color:#FFD54A}
+body.bfm .noStock,body.bfm .noStock *{color:#FFD54A}
+body.bfm .logo span{color:#FFD54A}
+body.bfm .oldp{color:#999}
+body.bfm .dbadge{background:#FF3B30;color:#fff}
+#bfm-strip{display:none;background:#FFD54A;color:#111;overflow:hidden;white-space:nowrap;font-weight:900;font-size:15px;direction:ltr;border-bottom:2px solid #111;position:relative;z-index:6}
+body.bfm #bfm-strip{display:block}
+#bfm-strip span{display:inline-block;padding:7px 0;animation:bfmq 18s linear infinite}
+@keyframes bfmq{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.bfstk{display:none;position:absolute;top:10px;right:10px;width:74px;height:74px;border-radius:50%;background:#FF3B30;color:#fff;font-weight:900;font-size:22px;line-height:1;direction:ltr;align-items:center;justify-content:center;text-align:center;transform:rotate(12deg);box-shadow:0 4px 14px rgba(0,0,0,.5);border:3px dashed #FFD54A;animation:bfstk 1.6s ease-in-out infinite}
+.bfstk small{display:block;font-size:11px}
+body.bfm .bfstk{display:flex;flex-direction:column}
+@keyframes bfstk{0%,100%{transform:rotate(12deg) scale(1)}50%{transform:rotate(-6deg) scale(1.12)}}
 .chip.pend{background:#FFF3CD;color:#7A5B00;font-weight:700}
 .btn.ok{background:#1E9E5A;border-color:#1E9E5A;color:#fff}
 .soldBadge{position:absolute;top:8px;right:8px;background:#0F1B33;color:#fff;font-size:13px;font-weight:700;padding:3px 10px;border-radius:999px}
@@ -352,6 +375,7 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
   </div>
 </div>
 <div id="shop">
+  <div id="bfm-strip"><span id="bfm-t"></span></div>
   <header class="shopbar">
     <button type="button" class="backBtn" id="backShop">חזרה</button>
     <button type="button" class="logo" id="toLanding" aria-label="Marketly, חזרה לדף הראשון">
@@ -359,7 +383,7 @@ html,body{touch-action:pan-x pan-y;-webkit-text-size-adjust:100%}
       <span>Marketly</span>
     </button>
   </header>
-  <section class="band">
+  <section class="band"><div class="bfstk" id="bfstk"><small>BLACK</small><span id="bfstkp">50%</span></div>
     <h1>כל המוצרים</h1>
     <p>משלוח עד הבית. התשלום במקום, במזומן או בביט.</p>
   </section>
@@ -615,6 +639,9 @@ function updateBanner(){
     if(inf.t){bfT=inf.t;bfLab=inf.lab;$("bfl").textContent=inf.lab;$("bfc").style.display="block";bfClock();if(!bfTick)bfTick=setInterval(bfClock,1000)}else{bfT=0;$("bfc").style.display="none"}
     b.style.display="block";setTimeout(function(){b.classList.add("on")},60)}
   else{b.classList.remove("on");b.style.display="none"}
+  var bm=!!(inf&&inf.mode==="live");
+  document.body.classList.toggle("bfm",bm);
+  if(bm){var pc=inf.big,tx=("BLACK FRIDAY -"+pc+" \u2605 ").repeat(12);var t=$("bfm-t");if(t&&t.textContent!==tx)t.textContent=tx+tx;var k=$("bfstkp");if(k)k.textContent="-"+pc}
 }
 var bfClosed=false;
 function loadProducts(cb){
