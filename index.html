@@ -347,7 +347,7 @@ body.bfm .note,body.bfm .hint,body.bfm .desc{color:#ddd}
 #aapp.bgAdmin .ahead h1,#aapp.bgAdmin .sub,#aapp.bgAdmin .hint,#aapp.bgAdmin .hint b,#aapp.bgAdmin .field label{color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.55)}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png?v=2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Marketly">
@@ -637,7 +637,7 @@ var SAMPLES=[
 
 /* ---------- מסד נתונים (Supabase) ---------- */
 var SUPA_URL="https://pptnlrrbkepdlryyewfn.supabase.co",SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdG5scnJia2VwZGxyeXlld2ZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2MDA4MjUsImV4cCI6MjExMTE3NjgyNX0.7CGRTALdDS-m4UElksIYFBi8EDtWe1ya5__D9-ma6Mk";
-var BUILD="b65";
+var BUILD="b66";
 (function(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/var BUILD="([^"]+)"/);if(m&&m[1]!==BUILD&&sessionStorage.getItem("mk_rl")!==m[1]){sessionStorage.setItem("mk_rl",m[1]);location.reload()}}).catch(function(){})}catch(e){}})();
 var products=[],loaded=false,loadErr=false,loadTry=0,CODE="",ROLE_="";
 function rpc(fn,args){
