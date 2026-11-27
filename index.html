@@ -164,6 +164,9 @@ body.bfm #landing{height:calc(100dvh - 32px);min-height:488px}
 body.bfm .bfstk{display:flex;flex-direction:column}
 @keyframes bfstk{0%,100%{transform:rotate(12deg) scale(1)}50%{transform:rotate(-6deg) scale(1.12)}}
 
+body.bfm .hero{margin-top:56px;padding:14px 28px 16px}
+body.bfm .hero svg{width:80px;height:80px;margin-bottom:8px}
+@media(max-height:640px){body.bfm .bfstk.big.b2{display:none}}
 .bfland{display:none;position:absolute;inset:0;z-index:2;pointer-events:none;overflow:hidden}
 body.bfm .bfland{display:block}
 body.bfm #landing{background:#0A0A0A}
@@ -176,7 +179,7 @@ body.bfm .enter{background:#FFD54A;color:#111;box-shadow:0 8px 28px rgba(255,213
 .bfrib.r1{top:44px;transform:rotate(-35deg)}
 .bfrib.r2{bottom:30px;right:-70px;left:auto;transform:rotate(-35deg);background:#FFD54A;color:#111;font-size:24px}
 .bfstk.big{display:flex;flex-direction:column;position:absolute;top:420px;left:10px;right:auto;width:78px;height:78px;font-size:22px}
-.bfstk.big.b2{top:auto;bottom:120px;right:auto;left:14px;width:96px;height:96px;font-size:28px;background:#FFD54A;color:#111;border-color:#111;transform:rotate(-10deg);animation-delay:.5s}
+.bfstk.big.b2{top:auto;bottom:124px;right:auto;left:6px;width:76px;height:76px;font-size:20px;background:#FFD54A;color:#111;border-color:#111;transform:rotate(-10deg);animation-delay:.5s}
 
 .bfland2{display:none}
 body.bfm .bfland2{display:block}
@@ -370,7 +373,7 @@ body.bfm .note,body.bfm .hint,body.bfm .desc{color:#ddd}
 </div>
 <div id="bfm-strip"><span id="bfm-t"></span></div>
 <div id="landing">
-  <div class="bfland" aria-hidden="true"><div class="bfrib r2">-<span class="bflp">50</span>%</div><div class="bfstk big"><small>BLACK</small><span class="bflpp">-50%</span></div><div class="bfstk big b2"><small>FRIDAY</small><span class="bflpp">SALE</span></div></div>
+  <div class="bfland" aria-hidden="true"><div class="bfrib r2">-<span class="bflp">50</span>%</div><div class="bfstk big b2"><small>FRIDAY</small><span class="bflpp">SALE</span></div></div>
   <canvas id="bgc" width="52" height="82" aria-hidden="true"></canvas>
   <div class="veil"></div>
   <button type="button" class="adminTop" id="toAdminTop">כניסת מנהלים</button>
@@ -634,7 +637,7 @@ var SAMPLES=[
 
 /* ---------- מסד נתונים (Supabase) ---------- */
 var SUPA_URL="https://pptnlrrbkepdlryyewfn.supabase.co",SUPA_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBwdG5scnJia2VwZGxyeXlld2ZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTU2MDA4MjUsImV4cCI6MjExMTE3NjgyNX0.7CGRTALdDS-m4UElksIYFBi8EDtWe1ya5__D9-ma6Mk";
-var BUILD="b64";
+var BUILD="b65";
 (function(){try{fetch(location.pathname+"?nc="+Date.now(),{cache:"no-store"}).then(function(r){return r.text()}).then(function(t){var m=t.match(/var BUILD="([^"]+)"/);if(m&&m[1]!==BUILD&&sessionStorage.getItem("mk_rl")!==m[1]){sessionStorage.setItem("mk_rl",m[1]);location.reload()}}).catch(function(){})}catch(e){}})();
 var products=[],loaded=false,loadErr=false,loadTry=0,CODE="",ROLE_="";
 function rpc(fn,args){
